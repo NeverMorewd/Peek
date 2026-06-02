@@ -427,3 +427,6 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+/src/tts/dist
+/src/tts/build/tts_server
+/src/worker/target
