@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+  </Folder>
+  <Project Path="Peek.Core/Peek.Core.csproj" Id="692f12dd-a41f-4de6-aca8-d3a4e659305a" />
+  <Project Path="Peek.Desktop/Peek.Desktop.csproj" />
+  <Project Path="Peek.Ipc/Peek.Ipc.csproj" Id="710f4811-a726-4825-966d-49d3364bf02e" />
+  <Project Path="Peek.UI/Peek.UI.csproj" />
+</Solution>

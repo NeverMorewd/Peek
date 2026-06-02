@@ -1,0 +1,22 @@
+<UserControl
+    x:Class="Peek.UI.Views.LoadingIndicatorView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:an="using:AsyncNavigation"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    x:DataType="{x:Type an:NavigationContext}"
+    mc:Ignorable="d">
+
+    <Border Margin="5" BorderThickness="0">
+        <ProgressBar
+            Width="100"
+            Height="100"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            IsIndeterminate="True"
+            Theme="{DynamicResource PipboyRingProgressBar}" />
+    </Border>
+</UserControl>

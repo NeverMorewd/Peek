@@ -1,0 +1,42 @@
+<Window
+    x:Class="Peek.UI.Views.SplashWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:Peek.Core.ViewModels"
+    Name="root"
+    Title="SplashWindow"
+    Width="400"
+    Height="100"
+    x:DataType="{x:Type vm:SplashViewModel}"
+    ExtendClientAreaToDecorationsHint="True"
+    WindowDecorations="BorderOnly"
+    WindowStartupLocation="CenterScreen"
+    mc:Ignorable="d">
+    <Grid>
+        <ProgressBar
+            Height="{Binding ElementName=root, Path=Height}"
+            Margin="0"
+            VerticalAlignment="Stretch"
+            BorderThickness="0"
+            IsIndeterminate="True" />
+        <StackPanel
+            VerticalAlignment="Center"
+            Orientation="Vertical"
+            Spacing="4">
+            <TextBlock
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                DockPanel.Dock="Top"
+                Foreground="{DynamicResource PipboyPrimaryDarkBrush}">
+                Loading...<Run Text="{Binding Ratio}" />
+                %</TextBlock>
+            <Button
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Command="{ReflectionBinding CloseDialogCommand}"
+                Content="Cancel" />
+        </StackPanel>
+    </Grid>
+</Window>

@@ -1,0 +1,118 @@
+<Window
+    x:Class="Peek.Views.MainWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="using:Peek.UI.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:views="using:Peek.Views"
+    xmlns:vm="using:Peek.Core.ViewModels"
+    Title="Peek"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    x:DataType="{x:Type vm:MainViewModel}"
+    ExtendClientAreaTitleBarHeightHint="30"
+    ExtendClientAreaToDecorationsHint="True"
+    Icon="/Assets/avalonia-logo.ico"
+    mc:Ignorable="d">
+    <Window.Resources>
+        <converters:ColorModelToBrushConverter x:Key="ColorToBrush" />
+        <DataTemplate x:Key="SwatchTemplate" DataType="{x:Type vm:PaletteSwatchViewModel}">
+            <Button
+                Width="22"
+                Height="22"
+                Margin="2"
+                Padding="0"
+                Background="{Binding Color, Converter={StaticResource ColorToBrush}}"
+                BorderThickness="0"
+                Command="{Binding SelectCommand}"
+                Cursor="Hand"
+                ToolTip.Tip="{Binding Color.ToHex}">
+
+                <Button.Styles>
+                    <Style Selector="Button">
+                        <Setter Property="BorderBrush" Value="Transparent" />
+                    </Style>
+
+                    <Style Selector="Button:pointerover">
+                        <Setter Property="BorderBrush" Value="White" />
+                    </Style>
+
+                    <Style Selector="Button:checked">
+                        <Setter Property="BorderBrush" Value="Yellow" />
+                    </Style>
+                </Button.Styles>
+
+            </Button>
+        </DataTemplate>
+    </Window.Resources>
+    <Grid RowDefinitions="30,*">
+
+        <DockPanel
+            Grid.Row="0"
+            Margin="0,2,200,0"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Top"
+            WindowDecorationProperties.ElementRole="User">
+            <Button
+                x:Name="PART_TriggerButton"
+                x:DataType="{x:Type vm:ColorPickerViewModel}"
+                Classes="colorPickerBtn"
+                DataContext="{Binding TitleBarContext}">
+                <StackPanel
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal"
+                    Spacing="4">
+                    <Border
+                        Width="14"
+                        Height="14"
+                        Background="{Binding SelectedColor, Converter={StaticResource ColorToBrush}, Mode=TwoWay}"
+                        BorderThickness="1"
+                        CornerRadius="0" />
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        FontSize="10"
+                        LetterSpacing="1"
+                        Text="{Binding HexLabel}" />
+
+                </StackPanel>
+
+                <Button.Flyout>
+                    <Flyout Placement="BottomEdgeAlignedRight" ShowMode="TransientWithDismissOnPointerMoveAway">
+                        <Flyout.FlyoutPresenterTheme>
+                            <ControlTheme TargetType="FlyoutPresenter">
+                                <Setter Property="BorderThickness" Value="1" />
+                                <Setter Property="CornerRadius" Value="0" />
+                                <Setter Property="Padding" Value="10" />
+                                <Setter Property="MinWidth" Value="220" />
+                            </ControlTheme>
+                        </Flyout.FlyoutPresenterTheme>
+
+                        <StackPanel Width="210" Spacing="5">
+
+                            <TextBlock
+                                HorizontalAlignment="Center"
+                                FontFamily="Courier New"
+                                FontSize="9"
+                                LetterSpacing="2"
+                                Text="— COLOR THEME —" />
+
+                            <Separator Height="1" />
+                            <ItemsControl ItemTemplate="{StaticResource SwatchTemplate}" ItemsSource="{Binding Swatches}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Flyout>
+                </Button.Flyout>
+            </Button>
+        </DockPanel>
+
+
+        <views:MainView Grid.Row="1" />
+
+    </Grid>
+</Window>

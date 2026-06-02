@@ -1,0 +1,41 @@
+[package]
+name = "ui-inspector-worker"
+version = "0.1.0"
+edition = "2021"
+description = "UI Inspector Worker – UIA backend for Windows UI inspection"
+
+[[bin]]
+name = "ui-inspector-worker"
+path = "src/main.rs"
+
+[dependencies]
+uiautomation = { version = "0.22", features = ["process", "event", "control", "pattern"] }
+
+windows = { version = "0.58", features = [
+    "Win32_Foundation",
+    "Win32_UI_WindowsAndMessaging",
+    "Win32_UI_Accessibility",
+    "Win32_System_Com",
+    "Win32_System_Threading",
+] }
+
+interprocess = "2"
+serde     = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# Structured logging (stderr only)
+tracing            = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# Error handling
+thiserror = "1"
+anyhow    = "1"
+
+# Synchronisation primitives
+parking_lot = "0.12"
+
+[profile.release]
+opt-level      = 3
+lto            = true
+codegen-units  = 1
+strip          = true

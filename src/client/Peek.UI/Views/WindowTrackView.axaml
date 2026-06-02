@@ -1,0 +1,469 @@
+<UserControl
+    x:Class="Peek.UI.Views.WindowTrackView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:hier="clr-namespace:Avalonia.Controls.DataGridHierarchical;assembly=Avalonia.Controls.DataGrid"
+    xmlns:vm="using:Peek.Core.ViewModels"
+    x:DataType="vm:WindowTrackViewModel">
+
+    <UserControl.Resources />
+
+    <Grid
+        Margin="8"
+        ColumnDefinitions="*,Auto"
+        ColumnSpacing="8"
+        RowDefinitions="Auto,Auto,*,Auto"
+        RowSpacing="6">
+
+        <WrapPanel
+            Grid.Row="0"
+            Grid.ColumnSpan="2"
+            Orientation="Horizontal">
+
+            <Button
+                Margin="0,0,4,4"
+                Command="{Binding RefreshCommand}"
+                Content="⟳ Refresh"
+                ToolTip.Tip="Force full re-enumeration (F5)" />
+
+            <!--  Live monitoring toggle  -->
+            <ToggleButton
+                Margin="0,0,12,4"
+                IsChecked="{Binding IsLiveMonitoring}"
+                ToolTip.Tip="Toggle real-time WinEvent monitoring">
+                <StackPanel Orientation="Horizontal" Spacing="5">
+                    <Ellipse
+                        Width="8"
+                        Height="8"
+                        VerticalAlignment="Center">
+                        <Ellipse.Styles>
+                            <Style Selector="Ellipse">
+                                <Setter Property="Fill" Value="#666" />
+                            </Style>
+                        </Ellipse.Styles>
+                        <!--  Green dot when live  -->
+                        <Ellipse.IsVisible>
+                            <Binding Path="IsLiveMonitoring" />
+                        </Ellipse.IsVisible>
+                    </Ellipse>
+                    <!--  The text changes based on state  -->
+                    <TextBlock VerticalAlignment="Center">
+                        >
+                    </TextBlock>
+                </StackPanel>
+            </ToggleButton>
+
+            <!--  Filters  -->
+            <CheckBox
+                Margin="0,0,8,4"
+                Content="Visible only"
+                IsChecked="{Binding ShowOnlyVisible}" />
+            <CheckBox
+                Margin="0,0,8,4"
+                Content="Hide tool wins"
+                IsChecked="{Binding HideToolWindows}" />
+            <CheckBox
+                Margin="0,0,8,4"
+                Content="Show children"
+                IsChecked="{Binding ShowChildren}" />
+            <CheckBox
+                Margin="0,0,12,4"
+                Content="Exclude self"
+                IsChecked="{Binding ExcludeSelf}"
+                ToolTip.Tip="Hide windows belonging to this process" />
+
+            <!--  Search  -->
+            <TextBox
+                Width="200"
+                Margin="0,0,4,4"
+                Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                Watermark="🔍  title / class / PID / HWND…" />
+            <Button
+                Margin="0,0,0,4"
+                Command="{Binding ClearSearchCommand}"
+                Content="✕"
+                IsVisible="{Binding SearchText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                ToolTip.Tip="Clear search" />
+        </WrapPanel>
+
+        <!--  ── Row 1: Status strip ───────────────────────────────────────────────  -->
+        <StackPanel
+            Grid.Row="1"
+            Grid.Column="0"
+            VerticalAlignment="Center"
+            Orientation="Horizontal"
+            Spacing="16">
+
+            <TextBlock Opacity="0.6" Text="{Binding TotalCount, StringFormat='Total: {0}'}" />
+            <TextBlock Opacity="0.6" Text="{Binding FilteredCount, StringFormat='Shown: {0}'}" />
+
+            <Border
+                Margin="4,0,0,0"
+                Padding="6,1"
+                CornerRadius="3">
+                <Border.IsVisible>
+                    <Binding Path="IsRefreshing" />
+                </Border.IsVisible>
+                <Border.Background>
+                    <SolidColorBrush Color="#336699ff" />
+                </Border.Background>
+                <TextBlock FontSize="11" Text="Refreshing…" />
+            </Border>
+
+            <Border
+                Margin="4,0,0,0"
+                Padding="6,1"
+                CornerRadius="3">
+                <Border.IsVisible>
+                    <Binding Path="!IsLiveMonitoring" />
+                </Border.IsVisible>
+                <Border.Background>
+                    <SolidColorBrush Color="#33f0a000" />
+                </Border.Background>
+                <TextBlock
+                    FontSize="11"
+                    Foreground="#f0a000"
+                    Text="⏸ Paused" />
+            </Border>
+        </StackPanel>
+
+        <!--  Live / Paused indicator pill  -->
+        <Border
+            Grid.Row="1"
+            Grid.Column="1"
+            Padding="8,2"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Center"
+            CornerRadius="4">
+            <Border.Styles>
+                <Style Selector="Border">
+                    <Setter Property="Background">
+                        <SolidColorBrush Color="#33888888" />
+                    </Setter>
+                </Style>
+            </Border.Styles>
+            <StackPanel Orientation="Horizontal" Spacing="5">
+                <Ellipse
+                    Width="7"
+                    Height="7"
+                    VerticalAlignment="Center">
+                    <Ellipse.Styles>
+                        <Style Selector="Ellipse">
+                            <Setter Property="Fill" Value="#888" />
+                        </Style>
+                    </Ellipse.Styles>
+                </Ellipse>
+                <TextBlock FontSize="11" Opacity="0.8">
+                    <TextBlock.Text>
+                        <Binding Path="IsLiveMonitoring" StringFormat="{}{0}" />
+                    </TextBlock.Text>
+                </TextBlock>
+            </StackPanel>
+        </Border>
+
+        <!--  ── Row 2: Hierarchical DataGrid ─────────────────────────────────────  -->
+        <DataGrid
+            Name="Tree"
+            Grid.Row="2"
+            Grid.ColumnSpan="2"
+            AutoGenerateColumns="False"
+            CanUserReorderColumns="True"
+            CanUserResizeColumns="True"
+            Classes="hierarchical"
+            GridLinesVisibility="Horizontal"
+            HeadersVisibility="Column"
+            HierarchicalRowsEnabled="True"
+            IsReadOnly="True"
+            RowHeight="22"
+            SelectedItem="{Binding SelectedWindow}"
+            SelectionMode="Single"
+            SelectionUnit="FullRow"
+            UseLogicalScrollable="True">
+
+            <DataGrid.Columns>
+
+                <!--  HWND — expand/collapse toggle lives here  -->
+                <DataGridHierarchicalColumn
+                    Width="110"
+                    x:CompileBindings="False"
+                    Binding="{Binding Item}"
+                    Header="HWND">
+                    <DataGridHierarchicalColumn.CellTemplate>
+                        <DataTemplate x:DataType="vm:WindowItemViewModel">
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                FontFamily="Consolas,Menlo,monospace"
+                                Foreground="#7ecfff"
+                                Text="{Binding HwndDisplay}" />
+                        </DataTemplate>
+                    </DataGridHierarchicalColumn.CellTemplate>
+                </DataGridHierarchicalColumn>
+
+                <!--  Title  -->
+                <DataGridTemplateColumn
+                    Width="2.5*"
+                    x:CompileBindings="False"
+                    Header="Title">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate x:DataType="hier:HierarchicalNode">
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                x:DataType="vm:WindowItemViewModel"
+                                DataContext="{Binding Item}"
+                                Text="{Binding Title}"
+                                TextTrimming="CharacterEllipsis"
+                                ToolTip.Tip="{Binding Title}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <!--  Class name  -->
+                <DataGridTemplateColumn
+                    Width="1.5*"
+                    x:CompileBindings="False"
+                    Header="Class">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate x:DataType="hier:HierarchicalNode">
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                x:DataType="vm:WindowItemViewModel"
+                                DataContext="{Binding Item}"
+                                Opacity="0.75"
+                                Text="{Binding ClassName}"
+                                TextTrimming="CharacterEllipsis"
+                                ToolTip.Tip="{Binding ClassName}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <!--  Process name + PID  -->
+                <DataGridTemplateColumn
+                    Width="130"
+                    x:CompileBindings="False"
+                    Header="Process">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate x:DataType="hier:HierarchicalNode">
+                            <StackPanel
+                                VerticalAlignment="Center"
+                                x:DataType="vm:WindowItemViewModel"
+                                DataContext="{Binding Item}"
+                                Orientation="Horizontal"
+                                Spacing="3">
+                                <TextBlock Text="{Binding ProcessName}" TextTrimming="CharacterEllipsis" />
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    FontSize="10"
+                                    Opacity="0.45"
+                                    Text="{Binding ProcessId, StringFormat='({0})'}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <!--  Bounding rect  -->
+                <DataGridTemplateColumn
+                    Width="170"
+                    x:CompileBindings="False"
+                    Header="Rect">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate x:DataType="hier:HierarchicalNode">
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                x:DataType="vm:WindowItemViewModel"
+                                DataContext="{Binding Item}"
+                                FontFamily="Consolas,Menlo,monospace"
+                                FontSize="11"
+                                Opacity="0.7"
+                                Text="{Binding RectDisplay}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <!--  State flags as compact letter icons  -->
+                <DataGridTemplateColumn
+                    Width="72"
+                    x:CompileBindings="False"
+                    Header="State">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate x:DataType="hier:HierarchicalNode">
+                            <StackPanel
+                                VerticalAlignment="Center"
+                                x:DataType="vm:WindowItemViewModel"
+                                DataContext="{Binding Item}"
+                                Orientation="Horizontal"
+                                Spacing="2">
+
+                                <!--  V = Visible  -->
+                                <Border
+                                    Padding="3,0"
+                                    CornerRadius="2"
+                                    ToolTip.Tip="Visible">
+                                    <Border.Background>
+                                        <SolidColorBrush Color="#224caf50" />
+                                    </Border.Background>
+                                    <TextBlock
+                                        FontSize="10"
+                                        FontWeight="Bold"
+                                        Text="V">
+                                        <TextBlock.Styles>
+                                            <Style Selector="TextBlock">
+                                                <Setter Property="Foreground" Value="#555" />
+                                            </Style>
+                                        </TextBlock.Styles>
+                                        <TextBlock.IsVisible>
+                                            <Binding Path="IsVisible" />
+                                        </TextBlock.IsVisible>
+                                    </TextBlock>
+                                </Border>
+
+                                <!--  E = Enabled  -->
+                                <Border
+                                    Padding="3,0"
+                                    CornerRadius="2"
+                                    IsVisible="{Binding IsEnabled}"
+                                    ToolTip.Tip="Enabled">
+                                    <Border.Background>
+                                        <SolidColorBrush Color="#1a7ecfff" />
+                                    </Border.Background>
+                                    <TextBlock
+                                        FontSize="10"
+                                        Foreground="#7ecfff"
+                                        Text="E" />
+                                </Border>
+
+                                <!--  ↓ = Minimized  -->
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    FontSize="11"
+                                    Foreground="#888"
+                                    IsVisible="{Binding IsMinimized}"
+                                    Text="↓"
+                                    ToolTip.Tip="Minimized" />
+
+                                <!--  ↑ = Maximized  -->
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    FontSize="11"
+                                    Foreground="#7ecfff"
+                                    IsVisible="{Binding IsMaximized}"
+                                    Text="↑"
+                                    ToolTip.Tip="Maximized" />
+
+                                <!--  T = Topmost  -->
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    FontSize="10"
+                                    Foreground="#f0a000"
+                                    IsVisible="{Binding IsTopmost}"
+                                    Text="T"
+                                    ToolTip.Tip="Topmost (WS_EX_TOPMOST)" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <!--  Style hex  -->
+                <DataGridTemplateColumn
+                    Width="96"
+                    x:CompileBindings="False"
+                    Header="Style">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate x:DataType="hier:HierarchicalNode">
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                x:DataType="vm:WindowItemViewModel"
+                                DataContext="{Binding Item}"
+                                FontFamily="Consolas,Menlo,monospace"
+                                FontSize="11"
+                                Opacity="0.55"
+                                Text="{Binding StyleHex}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <!--  ExStyle hex  -->
+                <DataGridTemplateColumn
+                    Width="96"
+                    x:CompileBindings="False"
+                    Header="ExStyle">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate x:DataType="hier:HierarchicalNode">
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                x:DataType="vm:WindowItemViewModel"
+                                DataContext="{Binding Item}"
+                                FontFamily="Consolas,Menlo,monospace"
+                                FontSize="11"
+                                Opacity="0.55"
+                                Text="{Binding ExStyleHex}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <Border
+            Grid.Row="3"
+            Grid.ColumnSpan="2"
+            Padding="10,5"
+            Background="#12ffffff"
+            BorderBrush="#22ffffff"
+            BorderThickness="0,1,0,0"
+            IsVisible="{Binding SelectedWindow, Converter={x:Static ObjectConverters.IsNotNull}}">
+            <Grid
+                x:DataType="vm:WindowItemViewModel"
+                ColumnDefinitions="Auto,*,Auto,*,Auto,*,Auto,Auto"
+                ColumnSpacing="6"
+                DataContext="{Binding SelectedWindow}">
+
+                <TextBlock
+                    Grid.Column="0"
+                    VerticalAlignment="Center"
+                    Opacity="0.5"
+                    Text="HWND:" />
+                <SelectableTextBlock
+                    Grid.Column="1"
+                    VerticalAlignment="Center"
+                    FontFamily="Consolas,Menlo,monospace"
+                    Foreground="#7ecfff"
+                    Text="{Binding HwndDisplay}" />
+
+                <TextBlock
+                    Grid.Column="2"
+                    Margin="12,0,0,0"
+                    VerticalAlignment="Center"
+                    Opacity="0.5"
+                    Text="Class:" />
+                <SelectableTextBlock
+                    Grid.Column="3"
+                    VerticalAlignment="Center"
+                    Text="{Binding ClassName}"
+                    TextTrimming="CharacterEllipsis" />
+
+                <TextBlock
+                    Grid.Column="4"
+                    Margin="12,0,0,0"
+                    VerticalAlignment="Center"
+                    Opacity="0.5"
+                    Text="PID:" />
+                <SelectableTextBlock
+                    Grid.Column="5"
+                    VerticalAlignment="Center"
+                    Text="{Binding ProcessId}" />
+
+                <TextBlock
+                    Grid.Column="6"
+                    Margin="12,0,0,0"
+                    VerticalAlignment="Center"
+                    Opacity="0.5"
+                    Text="Thread:" />
+                <TextBlock
+                    Grid.Column="7"
+                    VerticalAlignment="Center"
+                    Text="{Binding ThreadId}" />
+            </Grid>
+        </Border>
+
+    </Grid>
+</UserControl>
