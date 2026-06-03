@@ -31,9 +31,9 @@ public partial class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
-        AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+        //AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
-        TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
+        //TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
 
         NavigationOptions navigationOptions = new()
         {
@@ -95,27 +95,32 @@ public partial class App : Application
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            var dialogService = sp.GetRequiredService<IDialogService>();
-            dialogService.FrontShowWindowAsync("SplashWindow", result =>
-            {
-                if (result.Result == DialogButtonResult.Done)
-                {
-                    var mainWindow = sp.GetRequiredService<MainWindow>();
-                    mainWindow.DataContext = sp.GetRequiredService<MainViewModel>();
-                    desktop.MainWindow = mainWindow;
-                    desktop.ShutdownMode = Avalonia.Controls.ShutdownMode.OnMainWindowClose;
-                    desktop.Exit += OnExit;
-                    return mainWindow;
-                }
-                else
-                {
-                    if (Current?.ApplicationLifetime is IControlledApplicationLifetime applicationLifetime)
-                    {
-                        applicationLifetime.Shutdown();
-                    }
-                    return null;
-                }
-            });
+            var mainWindow = sp.GetRequiredService<MainWindow>();
+            mainWindow.DataContext = sp.GetRequiredService<MainViewModel>();
+            desktop.MainWindow = mainWindow;
+            desktop.ShutdownMode = Avalonia.Controls.ShutdownMode.OnMainWindowClose;
+            desktop.Exit += OnExit;
+            //var dialogService = sp.GetRequiredService<IDialogService>();
+            //dialogService.FrontShowWindowAsync("SplashWindow", result =>
+            //{
+            //    if (result.Result == DialogButtonResult.Done)
+            //    {
+            //        var mainWindow = sp.GetRequiredService<MainWindow>();
+            //        mainWindow.DataContext = sp.GetRequiredService<MainViewModel>();
+            //        desktop.MainWindow = mainWindow;
+            //        desktop.ShutdownMode = Avalonia.Controls.ShutdownMode.OnMainWindowClose;
+            //        desktop.Exit += OnExit;
+            //        return mainWindow;
+            //    }
+            //    else
+            //    {
+            //        if (Current?.ApplicationLifetime is IControlledApplicationLifetime applicationLifetime)
+            //        {
+            //            applicationLifetime.Shutdown();
+            //        }
+            //        return null;
+            //    }
+            //});
 
         }
         else if (ApplicationLifetime is IActivityApplicationLifetime singleViewFactoryApplicationLifetime)

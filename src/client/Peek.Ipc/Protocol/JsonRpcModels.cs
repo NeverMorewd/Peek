@@ -1,4 +1,4 @@
-
+﻿
 using Peek.Ipc.Channel;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -163,6 +163,6 @@ public sealed class WorkerStatus
 
     public override string ToString()
     {
-        return JsonSerializer.Serialize(this);
+        return JsonSerializer.Serialize(this, IpcJsonContext.Default.Options);
     }
 }

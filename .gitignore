@@ -430,3 +430,4 @@ FodyWeavers.xsd
 /src/tts/dist
 /src/tts/build/tts_server
 /src/worker/target
+/dist/win-x64

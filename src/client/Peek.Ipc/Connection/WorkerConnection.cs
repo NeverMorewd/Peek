@@ -158,7 +158,7 @@ public sealed class WorkerConnection(WorkerConnectionOptions options,
 
                 try
                 {
-                    _workerProcess.Kill(entireProcessTree: true);
+                    _workerProcess.Kill(entireProcessTree: false);
                 }
                 catch (Win32Exception ex) when (_workerProcess.HasExited)
                 {

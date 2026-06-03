@@ -1,15 +1,4 @@
 #!/usr/bin/env python3
-"""
-build.py
---------
-Cross-platform build helper for tts_server.exe.
-Equivalent to build.bat but works on macOS/Linux CI as well.
-
-Usage:
-    python build.py              # full build
-    python build.py --no-onefile # skip single-file variant (faster)
-    python build.py --clean-only # only clean artifacts
-"""
 
 import argparse
 import shutil

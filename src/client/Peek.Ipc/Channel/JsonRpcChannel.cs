@@ -1,4 +1,4 @@
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Peek.Ipc.Protocol;
 using Peek.Ipc.Transport;
 using System.Collections.Concurrent;
@@ -64,7 +64,7 @@ public sealed class JsonRpcChannel : IJsonRpcChannel
         string json;
         try
         {
-            json = JsonSerializer.Serialize(request, JsonOptions.Default);
+            json = JsonSerializer.Serialize(request, IpcJsonContext.Default.Options);
         }
         catch (Exception ex)
         {
@@ -93,7 +93,7 @@ public sealed class JsonRpcChannel : IJsonRpcChannel
         try
         {
             response = JsonSerializer.Deserialize<JsonRpcResponse>(
-                line, JsonOptions.Default)
+                line, IpcJsonContext.Default.Options)
                 ?? throw new JsonException("Deserialized to null");
         }
         catch (JsonException ex)

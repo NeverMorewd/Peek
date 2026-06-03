@@ -7,8 +7,7 @@ namespace Peek.Core.Services;
 
 public sealed class TtsService : IDisposable
 {
-    private const string ServerFolderName = "tts";
-    private const string ServerExeName = "tts_server_onefile.exe";
+    private const string ServerExeName = "tts_server.exe";
     private const string Host = "127.0.0.1";
     private const int Port = 5050;
     private static readonly TimeSpan StartupTimeout = TimeSpan.FromSeconds(15);
@@ -80,7 +79,7 @@ public sealed class TtsService : IDisposable
 
     private async Task StartServerAsync(CancellationToken ct)
     {
-        string exePath = Path.Combine(AppContext.BaseDirectory, ServerFolderName, ServerExeName);
+        string exePath = Path.Combine(AppContext.BaseDirectory, ServerExeName);
 
         if (!File.Exists(exePath))
             throw new FileNotFoundException(
@@ -149,7 +148,7 @@ public sealed class TtsService : IDisposable
             {
                 if (process.HasExited) continue;
 
-                process.Kill(entireProcessTree: true);
+                process.Kill(entireProcessTree: false);
                 using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(3));
                 await process.WaitForExitAsync(cts.Token);
             }

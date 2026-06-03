@@ -115,6 +115,6 @@ public sealed class WorkerClient : IWorkerClient
         if (!response.Result.HasValue)
             throw new InvalidOperationException("Response has no result");
 
-        return response.Result.Value.Deserialize<T>(JsonOptions.Default);
+        return response.Result.Value.Deserialize<T>(IpcJsonContext.Default.Options);
     }
 }

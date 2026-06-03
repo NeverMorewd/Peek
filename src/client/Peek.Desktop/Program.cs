@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Runtime.Versioning;
 using Avalonia;
 using Peek.UI;
 using ReactiveUI.Avalonia;
 
 namespace Peek.Desktop;
 
+[SupportedOSPlatform("windows7.0")]
 sealed class Program
 {
     // Initialization code. Don't use any Avalonia, third-party APIs or any

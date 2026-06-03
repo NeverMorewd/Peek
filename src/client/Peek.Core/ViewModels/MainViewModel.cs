@@ -30,6 +30,7 @@ public partial class MainViewModel : ViewModelBase, IDisposable
         _viewManager = serviceProvider.GetRequiredService<IViewManager>();
 
         _disposeService = serviceProvider.GetRequiredService<IDisposeService>();
+        _ = serviceProvider.GetRequiredService<AudioPlayer>().VlcInitializeAsync();
 
         _logger.LogInformation("[Init] MainViewModel ctor finished");
 
@@ -56,6 +57,7 @@ public partial class MainViewModel : ViewModelBase, IDisposable
     }
     public async Task InitializeAsync()
     {
+
         var ret = await _regionManager.RequestNavigateAsync("MainRegion", "ElementTrackView");
     }
 }

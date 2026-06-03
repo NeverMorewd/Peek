@@ -6,10 +6,17 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
 	<OutputPath>..\..\..\bin\</OutputPath>
+	<PublishAot>true</PublishAot>
+	<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
   </PropertyGroup>
 
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net8.0'))">
+	<IsTrimmable>true</IsTrimmable>
+	<PublishTrimmed>true</PublishTrimmed>
   </PropertyGroup>
 
   <ItemGroup>

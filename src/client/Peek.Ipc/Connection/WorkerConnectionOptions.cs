@@ -1,4 +1,4 @@
-// Connection/WorkerConnectionOptions.cs
+﻿// Connection/WorkerConnectionOptions.cs
 // All tunable parameters for WorkerConnection in one place.
 // Declared as a record so callers can use `with` expressions to derive variants.
 
@@ -13,7 +13,7 @@ public sealed record WorkerConnectionOptions
     public string PipeName { get; init; } = "ui-inspector-worker";
 
     /// <summary>Path to the Rust worker executable.</summary>
-    public string WorkerExecutablePath { get; init; } = "debug\\ui-inspector-worker.exe";
+    public string WorkerExecutablePath { get; init; } = "ui-inspector-worker.exe";
 
     /// <summary>
     /// When true, WorkerConnection launches and manages the worker process.
