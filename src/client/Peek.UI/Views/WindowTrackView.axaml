@@ -86,7 +86,6 @@
                 ToolTip.Tip="Clear search" />
         </WrapPanel>
 
-        <!--  ── Row 1: Status strip ───────────────────────────────────────────────  -->
         <StackPanel
             Grid.Row="1"
             Grid.Column="0"
@@ -126,8 +125,6 @@
                     Text="⏸ Paused" />
             </Border>
         </StackPanel>
-
-        <!--  Live / Paused indicator pill  -->
         <Border
             Grid.Row="1"
             Grid.Column="1"
@@ -161,7 +158,6 @@
             </StackPanel>
         </Border>
 
-        <!--  ── Row 2: Hierarchical DataGrid ─────────────────────────────────────  -->
         <DataGrid
             Name="Tree"
             Grid.Row="2"
@@ -200,10 +196,7 @@
                 </DataGridHierarchicalColumn>
 
                 <!--  Title  -->
-                <DataGridTemplateColumn
-                    Width="2.5*"
-                    x:CompileBindings="False"
-                    Header="Title">
+                <DataGridTemplateColumn Width="2.5*" Header="Title">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate x:DataType="hier:HierarchicalNode">
                             <TextBlock
@@ -218,10 +211,7 @@
                 </DataGridTemplateColumn>
 
                 <!--  Class name  -->
-                <DataGridTemplateColumn
-                    Width="1.5*"
-                    x:CompileBindings="False"
-                    Header="Class">
+                <DataGridTemplateColumn Width="1.5*" Header="Class">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate x:DataType="hier:HierarchicalNode">
                             <TextBlock
@@ -237,10 +227,7 @@
                 </DataGridTemplateColumn>
 
                 <!--  Process name + PID  -->
-                <DataGridTemplateColumn
-                    Width="130"
-                    x:CompileBindings="False"
-                    Header="Process">
+                <DataGridTemplateColumn Width="130" Header="Process">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate x:DataType="hier:HierarchicalNode">
                             <StackPanel
@@ -260,11 +247,7 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
 
-                <!--  Bounding rect  -->
-                <DataGridTemplateColumn
-                    Width="170"
-                    x:CompileBindings="False"
-                    Header="Rect">
+                <DataGridTemplateColumn Width="170" Header="Rect">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate x:DataType="hier:HierarchicalNode">
                             <TextBlock
@@ -279,11 +262,7 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
 
-                <!--  State flags as compact letter icons  -->
-                <DataGridTemplateColumn
-                    Width="72"
-                    x:CompileBindings="False"
-                    Header="State">
+                <DataGridTemplateColumn Width="72" Header="State">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate x:DataType="hier:HierarchicalNode">
                             <StackPanel
@@ -363,10 +342,7 @@
                 </DataGridTemplateColumn>
 
                 <!--  Style hex  -->
-                <DataGridTemplateColumn
-                    Width="96"
-                    x:CompileBindings="False"
-                    Header="Style">
+                <DataGridTemplateColumn Width="96" Header="Style">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate x:DataType="hier:HierarchicalNode">
                             <TextBlock
@@ -382,10 +358,7 @@
                 </DataGridTemplateColumn>
 
                 <!--  ExStyle hex  -->
-                <DataGridTemplateColumn
-                    Width="96"
-                    x:CompileBindings="False"
-                    Header="ExStyle">
+                <DataGridTemplateColumn Width="96" Header="ExStyle">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate x:DataType="hier:HierarchicalNode">
                             <TextBlock

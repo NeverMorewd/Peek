@@ -13,7 +13,6 @@ public partial class MainViewModel : ViewModelBase, IDisposable
     private readonly CompositeDisposable _disposables = [];
     private readonly ILogger _logger;
     private readonly IRegionManager _regionManager;
-    private readonly ElementTracker _elementTracker;
     private readonly IViewManager _viewManager;
     private readonly IDisposeService _disposeService;
 
@@ -24,7 +23,6 @@ public partial class MainViewModel : ViewModelBase, IDisposable
     public MainViewModel(IServiceProvider serviceProvider, ILogger<MainViewModel> logger)
     {
         _logger = logger;
-        _elementTracker = serviceProvider.GetRequiredService<ElementTracker>();
         _titleBarContext = serviceProvider.GetRequiredService<ColorPickerViewModel>();
         _regionManager = serviceProvider.GetRequiredService<IRegionManager>();
         _viewManager = serviceProvider.GetRequiredService<IViewManager>();

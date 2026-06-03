@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using Peek.Core.Services;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
-using System.Reactive.Concurrency;
 
 namespace Peek.Core.ViewModels;
 public partial class SplashViewModel : ViewModelBase, IDialogAware
@@ -17,7 +16,6 @@ public partial class SplashViewModel : ViewModelBase, IDialogAware
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger _logger;
     private Task? _loadingTask;
-    private DateTimeOffset _startTime;  // moved here for accurate timing
 
     public SplashViewModel(IServiceProvider serviceProvider, ILogger<SplashViewModel> logger)
     {
@@ -40,7 +38,6 @@ public partial class SplashViewModel : ViewModelBase, IDialogAware
 
     public Task OnDialogOpenedAsync(IDialogParameters? parameters, CancellationToken cancellationToken)
     {
-        _startTime = DateTimeOffset.UtcNow;
         _cts = new CancellationTokenSource();
         _loadingTask = _serviceProvider.GetRequiredService<AudioPlayer>().VlcInitializeAsync();
         _ = StartProgressAsync(Task.WhenAll(_loadingTask, Task.Delay(2000)), _cts.Token);
