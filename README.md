@@ -1,4 +1,13 @@
-# Peek
-
-<img width="512" height="512" alt="image" src="https://github.com/user-attachments/assets/03a2c6a7-052e-45be-9400-d672fd0d6e30" />
+﻿<div align="center">
+  <img 
+    align="center" 
+    src="https://raw.githubusercontent.com/NeverMorewd/Peek/main/logo.png" 
+    width="250"
+  />
+  </a>
+  <h1 align="center">Peek</h1>
+  <p align="center">
+  A screen reader for Windows
+  </p>
+</div>
 
