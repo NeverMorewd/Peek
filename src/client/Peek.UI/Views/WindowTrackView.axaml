@@ -35,18 +35,14 @@
                     <Ellipse
                         Width="8"
                         Height="8"
-                        VerticalAlignment="Center">
-                        <Ellipse.Styles>
-                            <Style Selector="Ellipse">
-                                <Setter Property="Fill" Value="#666" />
-                            </Style>
-                        </Ellipse.Styles>
-                        <!--  Green dot when live  -->
-                        <Ellipse.IsVisible>
-                            <Binding Path="IsLiveMonitoring" />
-                        </Ellipse.IsVisible>
-                    </Ellipse>
-                    <!--  The text changes based on state  -->
+                        VerticalAlignment="Center"
+                        Fill="{DynamicResource PipboyTextDimBrush}" />
+                    <Ellipse
+                        Width="8"
+                        Height="8"
+                        VerticalAlignment="Center"
+                        Fill="{DynamicResource PipboySuccessBrush}"
+                        IsVisible="{Binding IsLiveMonitoring}" />
                     <TextBlock VerticalAlignment="Center">
                         >
                     </TextBlock>
@@ -93,68 +89,52 @@
             Orientation="Horizontal"
             Spacing="16">
 
-            <TextBlock Opacity="0.6" Text="{Binding TotalCount, StringFormat='Total: {0}'}" />
-            <TextBlock Opacity="0.6" Text="{Binding FilteredCount, StringFormat='Shown: {0}'}" />
+            <TextBlock Foreground="{DynamicResource PipboyTextDimBrush}" Text="{Binding TotalCount, StringFormat='Total: {0}'}" />
+            <TextBlock Foreground="{DynamicResource PipboyTextDimBrush}" Text="{Binding FilteredCount, StringFormat='Shown: {0}'}" />
 
             <Border
                 Margin="4,0,0,0"
                 Padding="6,1"
-                CornerRadius="3">
-                <Border.IsVisible>
-                    <Binding Path="IsRefreshing" />
-                </Border.IsVisible>
-                <Border.Background>
-                    <SolidColorBrush Color="#336699ff" />
-                </Border.Background>
-                <TextBlock FontSize="11" Text="Refreshing…" />
+                Background="{DynamicResource PipboyPrimaryBrush}"
+                CornerRadius="3"
+                IsVisible="{Binding IsRefreshing}">
+                <TextBlock
+                    FontSize="11"
+                    Foreground="{DynamicResource PipboyTextBrush}"
+                    Text="Refreshing…" />
             </Border>
 
             <Border
                 Margin="4,0,0,0"
                 Padding="6,1"
-                CornerRadius="3">
-                <Border.IsVisible>
-                    <Binding Path="!IsLiveMonitoring" />
-                </Border.IsVisible>
-                <Border.Background>
-                    <SolidColorBrush Color="#33f0a000" />
-                </Border.Background>
+                Background="{DynamicResource PipboyWarningBrush}"
+                CornerRadius="3"
+                IsVisible="{Binding !IsLiveMonitoring}">
                 <TextBlock
                     FontSize="11"
-                    Foreground="#f0a000"
+                    Foreground="{DynamicResource PipboyWarningBrush}"
                     Text="⏸ Paused" />
             </Border>
         </StackPanel>
+
         <Border
             Grid.Row="1"
             Grid.Column="1"
             Padding="8,2"
             HorizontalAlignment="Right"
             VerticalAlignment="Center"
+            Background="{DynamicResource PipboySurfaceBrush}"
             CornerRadius="4">
-            <Border.Styles>
-                <Style Selector="Border">
-                    <Setter Property="Background">
-                        <SolidColorBrush Color="#33888888" />
-                    </Setter>
-                </Style>
-            </Border.Styles>
             <StackPanel Orientation="Horizontal" Spacing="5">
                 <Ellipse
                     Width="7"
                     Height="7"
-                    VerticalAlignment="Center">
-                    <Ellipse.Styles>
-                        <Style Selector="Ellipse">
-                            <Setter Property="Fill" Value="#888" />
-                        </Style>
-                    </Ellipse.Styles>
-                </Ellipse>
-                <TextBlock FontSize="11" Opacity="0.8">
-                    <TextBlock.Text>
-                        <Binding Path="IsLiveMonitoring" StringFormat="{}{0}" />
-                    </TextBlock.Text>
-                </TextBlock>
+                    VerticalAlignment="Center"
+                    Fill="{DynamicResource PipboyTextDimBrush}" />
+                <TextBlock
+                    FontSize="11"
+                    Foreground="{DynamicResource PipboyTextDimBrush}"
+                    Text="{Binding IsLiveMonitoring, StringFormat='{}{0}'}" />
             </StackPanel>
         </Border>
 
@@ -189,7 +169,7 @@
                             <TextBlock
                                 VerticalAlignment="Center"
                                 FontFamily="Consolas,Menlo,monospace"
-                                Foreground="#7ecfff"
+                                Foreground="{DynamicResource PipboyPrimaryLightBrush}"
                                 Text="{Binding HwndDisplay}" />
                         </DataTemplate>
                     </DataGridHierarchicalColumn.CellTemplate>
@@ -203,6 +183,7 @@
                                 VerticalAlignment="Center"
                                 x:DataType="vm:WindowItemViewModel"
                                 DataContext="{Binding Item}"
+                                Foreground="{DynamicResource PipboyTextBrush}"
                                 Text="{Binding Title}"
                                 TextTrimming="CharacterEllipsis"
                                 ToolTip.Tip="{Binding Title}" />
@@ -218,6 +199,7 @@
                                 VerticalAlignment="Center"
                                 x:DataType="vm:WindowItemViewModel"
                                 DataContext="{Binding Item}"
+                                Foreground="{DynamicResource PipboyTextDimBrush}"
                                 Opacity="0.75"
                                 Text="{Binding ClassName}"
                                 TextTrimming="CharacterEllipsis"
@@ -236,11 +218,14 @@
                                 DataContext="{Binding Item}"
                                 Orientation="Horizontal"
                                 Spacing="3">
-                                <TextBlock Text="{Binding ProcessName}" TextTrimming="CharacterEllipsis" />
+                                <TextBlock
+                                    Foreground="{DynamicResource PipboyTextBrush}"
+                                    Text="{Binding ProcessName}"
+                                    TextTrimming="CharacterEllipsis" />
                                 <TextBlock
                                     VerticalAlignment="Center"
                                     FontSize="10"
-                                    Opacity="0.45"
+                                    Foreground="{DynamicResource PipboyTextDimBrush}"
                                     Text="{Binding ProcessId, StringFormat='({0})'}" />
                             </StackPanel>
                         </DataTemplate>
@@ -256,7 +241,7 @@
                                 DataContext="{Binding Item}"
                                 FontFamily="Consolas,Menlo,monospace"
                                 FontSize="11"
-                                Opacity="0.7"
+                                Foreground="{DynamicResource PipboyTextDimBrush}"
                                 Text="{Binding RectDisplay}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
@@ -275,38 +260,27 @@
                                 <!--  V = Visible  -->
                                 <Border
                                     Padding="3,0"
+                                    Background="{DynamicResource PipboySuccessBrush}"
                                     CornerRadius="2"
+                                    IsVisible="{Binding IsVisible}"
                                     ToolTip.Tip="Visible">
-                                    <Border.Background>
-                                        <SolidColorBrush Color="#224caf50" />
-                                    </Border.Background>
                                     <TextBlock
                                         FontSize="10"
                                         FontWeight="Bold"
-                                        Text="V">
-                                        <TextBlock.Styles>
-                                            <Style Selector="TextBlock">
-                                                <Setter Property="Foreground" Value="#555" />
-                                            </Style>
-                                        </TextBlock.Styles>
-                                        <TextBlock.IsVisible>
-                                            <Binding Path="IsVisible" />
-                                        </TextBlock.IsVisible>
-                                    </TextBlock>
+                                        Foreground="{DynamicResource PipboyTextBrush}"
+                                        Text="V" />
                                 </Border>
 
                                 <!--  E = Enabled  -->
                                 <Border
                                     Padding="3,0"
+                                    Background="{DynamicResource PipboyPrimaryBrush}"
                                     CornerRadius="2"
                                     IsVisible="{Binding IsEnabled}"
                                     ToolTip.Tip="Enabled">
-                                    <Border.Background>
-                                        <SolidColorBrush Color="#1a7ecfff" />
-                                    </Border.Background>
                                     <TextBlock
                                         FontSize="10"
-                                        Foreground="#7ecfff"
+                                        Foreground="{DynamicResource PipboyPrimaryLightBrush}"
                                         Text="E" />
                                 </Border>
 
@@ -314,7 +288,7 @@
                                 <TextBlock
                                     VerticalAlignment="Center"
                                     FontSize="11"
-                                    Foreground="#888"
+                                    Foreground="{DynamicResource PipboyTextDimBrush}"
                                     IsVisible="{Binding IsMinimized}"
                                     Text="↓"
                                     ToolTip.Tip="Minimized" />
@@ -323,7 +297,7 @@
                                 <TextBlock
                                     VerticalAlignment="Center"
                                     FontSize="11"
-                                    Foreground="#7ecfff"
+                                    Foreground="{DynamicResource PipboyPrimaryLightBrush}"
                                     IsVisible="{Binding IsMaximized}"
                                     Text="↑"
                                     ToolTip.Tip="Maximized" />
@@ -332,7 +306,7 @@
                                 <TextBlock
                                     VerticalAlignment="Center"
                                     FontSize="10"
-                                    Foreground="#f0a000"
+                                    Foreground="{DynamicResource PipboyWarningBrush}"
                                     IsVisible="{Binding IsTopmost}"
                                     Text="T"
                                     ToolTip.Tip="Topmost (WS_EX_TOPMOST)" />
@@ -351,7 +325,7 @@
                                 DataContext="{Binding Item}"
                                 FontFamily="Consolas,Menlo,monospace"
                                 FontSize="11"
-                                Opacity="0.55"
+                                Foreground="{DynamicResource PipboyTextDimBrush}"
                                 Text="{Binding StyleHex}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
@@ -367,7 +341,7 @@
                                 DataContext="{Binding Item}"
                                 FontFamily="Consolas,Menlo,monospace"
                                 FontSize="11"
-                                Opacity="0.55"
+                                Foreground="{DynamicResource PipboyTextDimBrush}"
                                 Text="{Binding ExStyleHex}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
@@ -380,8 +354,8 @@
             Grid.Row="3"
             Grid.ColumnSpan="2"
             Padding="10,5"
-            Background="#12ffffff"
-            BorderBrush="#22ffffff"
+            Background="{DynamicResource PipboySurfaceBrush}"
+            BorderBrush="{DynamicResource PipboyBorderBrush}"
             BorderThickness="0,1,0,0"
             IsVisible="{Binding SelectedWindow, Converter={x:Static ObjectConverters.IsNotNull}}">
             <Grid
@@ -393,24 +367,25 @@
                 <TextBlock
                     Grid.Column="0"
                     VerticalAlignment="Center"
-                    Opacity="0.5"
+                    Foreground="{DynamicResource PipboyTextDimBrush}"
                     Text="HWND:" />
                 <SelectableTextBlock
                     Grid.Column="1"
                     VerticalAlignment="Center"
                     FontFamily="Consolas,Menlo,monospace"
-                    Foreground="#7ecfff"
+                    Foreground="{DynamicResource PipboyPrimaryLightBrush}"
                     Text="{Binding HwndDisplay}" />
 
                 <TextBlock
                     Grid.Column="2"
                     Margin="12,0,0,0"
                     VerticalAlignment="Center"
-                    Opacity="0.5"
+                    Foreground="{DynamicResource PipboyTextDimBrush}"
                     Text="Class:" />
                 <SelectableTextBlock
                     Grid.Column="3"
                     VerticalAlignment="Center"
+                    Foreground="{DynamicResource PipboyTextBrush}"
                     Text="{Binding ClassName}"
                     TextTrimming="CharacterEllipsis" />
 
@@ -418,22 +393,24 @@
                     Grid.Column="4"
                     Margin="12,0,0,0"
                     VerticalAlignment="Center"
-                    Opacity="0.5"
+                    Foreground="{DynamicResource PipboyTextDimBrush}"
                     Text="PID:" />
                 <SelectableTextBlock
                     Grid.Column="5"
                     VerticalAlignment="Center"
+                    Foreground="{DynamicResource PipboyTextBrush}"
                     Text="{Binding ProcessId}" />
 
                 <TextBlock
                     Grid.Column="6"
                     Margin="12,0,0,0"
                     VerticalAlignment="Center"
-                    Opacity="0.5"
+                    Foreground="{DynamicResource PipboyTextDimBrush}"
                     Text="Thread:" />
                 <TextBlock
                     Grid.Column="7"
                     VerticalAlignment="Center"
+                    Foreground="{DynamicResource PipboyTextBrush}"
                     Text="{Binding ThreadId}" />
             </Grid>
         </Border>
