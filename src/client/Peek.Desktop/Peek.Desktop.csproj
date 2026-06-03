@@ -6,7 +6,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
 	<OutputPath>..\..\..\bin\</OutputPath>
-	<PublishAot>true</PublishAot>
+	<!--<PublishAot>true</PublishAot>-->
 	<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
   </PropertyGroup>
 

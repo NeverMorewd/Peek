@@ -4,39 +4,77 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:pipboy="https://github.com/NeverMorewd/Pipboy.Avalonia"
     xmlns:vm="using:Peek.Core.ViewModels"
     Name="root"
     Title="SplashWindow"
-    Width="400"
-    Height="100"
+    Width="512"
+    Height="512"
     x:DataType="{x:Type vm:SplashViewModel}"
     ExtendClientAreaToDecorationsHint="True"
     WindowDecorations="BorderOnly"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
-    <Grid>
-        <ProgressBar
-            Height="{Binding ElementName=root, Path=Height}"
-            Margin="0"
-            VerticalAlignment="Stretch"
-            BorderThickness="0"
-            IsIndeterminate="True" />
-        <StackPanel
-            VerticalAlignment="Center"
-            Orientation="Vertical"
-            Spacing="4">
-            <TextBlock
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                DockPanel.Dock="Top"
-                Foreground="{DynamicResource PipboyPrimaryDarkBrush}">
-                Loading...<Run Text="{Binding Ratio}" />
-                %</TextBlock>
-            <Button
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                Command="{ReflectionBinding CloseDialogCommand}"
-                Content="Cancel" />
-        </StackPanel>
-    </Grid>
+    <pipboy:CrtDisplay Name="MainCrt">
+        <Grid Width="512" Height="512">
+            <Border
+                Background="#000B08"
+                BorderBrush="#27FF72"
+                BorderThickness="4">
+                <Grid>
+
+                    <Canvas>
+
+                        <Path
+                            Data="M 50,255                               Q 256,40 462,255                               Q 256,470 50,255 Z"
+                            Stroke="#27FF72"
+                            StrokeThickness="4" />
+
+                        <Ellipse
+                            Canvas.Left="181"
+                            Canvas.Top="181"
+                            Width="150"
+                            Height="150"
+                            Stroke="#27FF72"
+                            StrokeThickness="4" />
+
+                        <Ellipse
+                            Canvas.Left="218"
+                            Canvas.Top="218"
+                            Width="76"
+                            Height="76"
+                            Fill="#27FF72" />
+
+                        <Ellipse
+                            Canvas.Left="239"
+                            Canvas.Top="239"
+                            Width="34"
+                            Height="34"
+                            Fill="#000B08" />
+
+                        <Ellipse
+                            Canvas.Left="241"
+                            Canvas.Top="228"
+                            Width="14"
+                            Height="14"
+                            Fill="#005F2A" />
+
+                    </Canvas>
+
+                    <TextBlock
+                        Margin="0,0,0,42"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Bottom"
+                        FontSize="32"
+                        FontWeight="Bold"
+                        Foreground="#27FF72"
+                        LetterSpacing="6"
+                        Text="P E E K" />
+
+                </Grid>
+
+            </Border>
+
+        </Grid>
+    </pipboy:CrtDisplay>
 </Window>
