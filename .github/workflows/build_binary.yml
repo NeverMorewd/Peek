@@ -26,7 +26,7 @@ jobs:
           GH_PAT: ${{ secrets.GH_PACKAGES_TOKEN }}
         shell: pwsh
         run: |
-          $template = "nuget.config"
+          $template = "src/client/nuget.config"
           if (-not (Test-Path $template)) {
             Write-Error "nuget.config not found in repository root"
             exit 1
