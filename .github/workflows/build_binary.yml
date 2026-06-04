@@ -1,9 +1,11 @@
-name: Build Peek
+name: pack
 
 on:
-  push:
-    branches: [ "main" ]
   workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: read
 
 jobs:
   build:
@@ -19,10 +21,21 @@ jobs:
         with:
           dotnet-version: "10.0.x"
 
-      - name: Restore
+      - name: Restore .NET (using local nuget.config with token substitution)
         env:
-          NUGET_AUTH_TOKEN: ${{ secrets.GH_PACKAGES_TOKEN }}
-        run: dotnet restore src/client/Peek.slnx --source "https://nuget.pkg.github.com/NeverMorewd/index.json" --source "https://api.nuget.org/v3/index.json"
+          GH_PAT: ${{ secrets.GH_PACKAGES_TOKEN }}
+        shell: pwsh
+        run: |
+          $template = "nuget.config"
+          if (-not (Test-Path $template)) {
+            Write-Error "nuget.config not found in repository root"
+            exit 1
+          }
+          $content = Get-Content $template -Raw
+          $content = $content.Replace('%GITHUB_TOKEN%', $env:GH_PAT)
+          $tempConfig = "nuget.actions.config"
+          $content | Out-File -FilePath $tempConfig -Encoding utf8
+          dotnet restore src/client/Peek.slnx --configfile $tempConfig
 
       # --- Rust ---
       - name: Setup Rust
@@ -36,22 +49,89 @@ jobs:
         with:
           python-version: "3.11"
 
-      # --- install python deps
-      - name: Install Python tools
+      - name: Clean output directory
+        shell: pwsh
         run: |
+          $dist = "dist/win-x64"
+          if (Test-Path $dist) { Remove-Item -Recurse -Force $dist }
+          New-Item -ItemType Directory -Path $dist -Force
+
+      - name: Build C# (AOT)
+        shell: pwsh
+        run: |
+          $slnx = "src/client/Peek.slnx"
+
+          dotnet publish $slnx `
+            -c Release `
+            -r win-x64 `
+            --self-contained true `
+            -p:PublishAot=true `
+            -p:StripSymbols=true `
+            -o dist/win-x64
+
+          $libvlc = "dist/win-x64/libvlc"
+          if (Test-Path $libvlc) {
+            Get-ChildItem $libvlc -Directory | Where-Object { $_.Name -ne "win-x64" } | Remove-Item -Recurse -Force
+          }
+
+          Get-ChildItem dist/win-x64 -Recurse -Filter *.pdb | Remove-Item -Force
+
+      - name: Build Python
+        shell: pwsh
+        run: |
+          $spec = "src/tts/tts_server.spec"
+          if (-not (Test-Path $spec)) { Write-Error "Spec file not found: $spec"; exit 1 }
+
           python -m pip install --upgrade pip
+          python -m pip install edge-tts fastapi uvicorn pyinstaller
 
-      # --- build ---
-      - name: Run build script
+          $ttsDir = "src/tts"
+          $distTmp = "$ttsDir/dist"
+          $buildTmp = "$ttsDir/build"
+
+          python -m PyInstaller $spec `
+            --noconfirm `
+            --distpath $distTmp `
+            --workpath $buildTmp
+
+          $srcFolder = "$distTmp/tts_server"
+          $srcSingle = "$distTmp/tts_server_onefile.exe"
+
+          if (Test-Path $srcFolder) {
+            Copy-Item -Path "$srcFolder/*" -Destination dist/win-x64 -Recurse -Force
+          } elseif (Test-Path $srcSingle) {
+            Copy-Item -Path $srcSingle -Destination dist/win-x64/tts_server.exe -Force
+          } else {
+            Write-Error "PyInstaller produced no recognisable output"
+            exit 1
+          }
+
+      - name: Build Rust
+        shell: pwsh
         run: |
-          python build.py --only csharp python rust
+          $cargoToml = "src/worker/Cargo.toml"
+          if (-not (Test-Path $cargoToml)) { Write-Error "Cargo.toml not found in src/worker"; exit 1 }
 
-      # --- zip artifacts ---
+          cargo build --release --target x86_64-pc-windows-msvc
+
+          $releaseDir = "src/worker/target/x86_64-pc-windows-msvc/release"
+          Get-ChildItem $releaseDir -Filter *.exe | ForEach-Object {
+            Copy-Item $_.FullName -Destination dist/win-x64 -Force
+          }
+
+      - name: Verify build outputs
+        shell: pwsh
+        run: |
+          Write-Host "`n[Build outputs] dist/win-x64"
+          Get-ChildItem dist/win-x64 -Recurse -File | ForEach-Object {
+            $sizeMB = [math]::Round($_.Length / 1MB, 1)
+            Write-Host ("  {0,-55} {1,7} MB" -f $_.Name, $sizeMB)
+          }
+
       - name: Create zip
         run: |
           powershell Compress-Archive -Path dist\win-x64\* -DestinationPath Peek-win-x64.zip
 
-      # --- upload artifact ---
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
