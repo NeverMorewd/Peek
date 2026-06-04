@@ -19,6 +19,16 @@ jobs:
         with:
           dotnet-version: "10.0.x"
 
+      - name: Auth GitHub Packages
+        shell: pwsh
+        run: |
+          dotnet nuget add source `
+            https://nuget.pkg.github.com/NeverMorewd/index.json `
+            --name github `
+            --username NeverMorewd `
+            --password ${{ secrets.GH_PACKAGES_TOKEN }} `
+            --store-password-in-clear-text
+
       # --- Rust ---
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
