@@ -1,0 +1,54 @@
+name: Build Peek
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # --- .NET ---
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      # --- Rust ---
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+
+      # --- Python ---
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # --- install python deps
+      - name: Install Python tools
+        run: |
+          python -m pip install --upgrade pip
+
+      # --- build ---
+      - name: Run build script
+        run: |
+          python build.py --only csharp python rust
+
+      # --- zip artifacts ---
+      - name: Create zip
+        run: |
+          powershell Compress-Archive -Path dist\win-x64\* -DestinationPath Peek-win-x64.zip
+
+      # --- upload artifact ---
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Peek-win-x64
+          path: Peek-win-x64.zip
