@@ -11,10 +11,9 @@ a = Analysis(
         "websockets.legacy.client",
     ],
     excludes=[
-        "tkinter", "matplotlib", "numpy", "pandas",
-        "scipy", "PIL", "cv2", "PyQt5", "PyQt6",
-        "unittest", "email", "html", "xml",
-        "pydoc", "doctest", "difflib",
+    "tkinter", "matplotlib", "numpy", "pandas",
+    "scipy", "PIL", "cv2", "PyQt5", "PyQt6",
+    "pydoc", "doctest", "difflib"
     ],
 )
 

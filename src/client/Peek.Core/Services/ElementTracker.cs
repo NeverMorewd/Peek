@@ -143,10 +143,10 @@ public partial class ElementTracker : ReactiveObject, IDisposable
 
         try
         {
-            _logger.LogDebug("start to GetVoice");
+            //_logger.LogDebug("start to GetVoice");
             var voiceBytes = await _tsService.GetVoiceAsync($"This is {info.Name}", ct: _ttsCts.Token);
             _audioPlayer.Stop();
-            _logger.LogDebug("start to PlayVoice");
+            //_logger.LogDebug("start to PlayVoice");
             await _audioPlayer.PlayBytesAsync(voiceBytes);
         }
         catch (OperationCanceledException oce)

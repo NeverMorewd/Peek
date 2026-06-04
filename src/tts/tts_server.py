@@ -14,7 +14,7 @@ import edge_tts
 
 
 def run_async(coro):
-    return asyncio.get_event_loop().run_until_complete(coro)
+    return asyncio.run(coro)
 
 
 class TTSHandler(BaseHTTPRequestHandler):
@@ -94,10 +94,17 @@ class TTSHandler(BaseHTTPRequestHandler):
 
 
 if __name__ == "__main__":
+    import traceback
     parser = argparse.ArgumentParser()
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=5050)
     args = parser.parse_args()
 
-    server = HTTPServer((args.host, args.port), TTSHandler)
-    server.serve_forever()
+    try:
+        print(f"Starting on {args.host}:{args.port}", flush=True)
+        server = HTTPServer((args.host, args.port), TTSHandler)
+        print("Server ready", flush=True)
+        server.serve_forever()
+    except Exception:
+        traceback.print_exc()
+        sys.exit(1)
