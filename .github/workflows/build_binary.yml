@@ -21,8 +21,8 @@ jobs:
 
       - name: Restore
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_PACKAGES_TOKEN }}
-        run: dotnet restore src/client/Peek.slnx
+          NUGET_AUTH_TOKEN: ${{ secrets.GH_PACKAGES_TOKEN }}
+        run: dotnet restore src/client/Peek.slnx --source "https://nuget.pkg.github.com/NeverMorewd/index.json" --source "https://api.nuget.org/v3/index.json"
 
       # --- Rust ---
       - name: Setup Rust
