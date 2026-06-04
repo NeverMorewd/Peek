@@ -1,8 +1,6 @@
 name: Test GitHub Packages token
 
 on:
-  push:
-    branches: [ "main" ]
   workflow_dispatch:
 
 jobs:
