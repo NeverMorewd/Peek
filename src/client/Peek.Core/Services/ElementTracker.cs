@@ -130,30 +130,23 @@ public partial class ElementTracker : ReactiveObject, IDisposable
                         onError: ex => _logger.LogError(ex, "TTS pipeline error")
                     );
     }
-    /// <summary>
-    /// Cancels any in-flight TTS request and speaks the new element.
-    /// </summary>
     private async Task SpeakElementAsync(ElementInfo? info, CancellationToken ct)
     {
         if (info is null) return;
 
         _logger.LogDebug("Get element: {Name}; rect: {Rect}", info.Name, info.Rect);
 
-        // Cancel and replace the previous CTS with a fresh independent one
-        // Do NOT link to ct here – ct is already cancelled by .Switch()
         var oldCts = _ttsCts;
-        _ttsCts = new CancellationTokenSource();  // fresh, not linked to anything
+        _ttsCts = new CancellationTokenSource();
         await oldCts.CancelAsync();
         oldCts.Dispose();
 
         try
         {
-            var voiceBytes =
-            await _tsService.GetVoiceAsync(
-                $"This is {info.Name}",
-                ct: _ttsCts.Token);
-
+            _logger.LogDebug("start to GetVoice");
+            var voiceBytes = await _tsService.GetVoiceAsync($"This is {info.Name}", ct: _ttsCts.Token);
             _audioPlayer.Stop();
+            _logger.LogDebug("start to PlayVoice");
             await _audioPlayer.PlayBytesAsync(voiceBytes);
         }
         catch (OperationCanceledException oce)

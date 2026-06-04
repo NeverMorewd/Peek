@@ -53,8 +53,6 @@ public sealed class TtsService : IDisposable
 
         await EnsureStartedAsync(ct);
 
-        //_audioPlayer.Stop();
-
         ct.ThrowIfCancellationRequested();
 
         string url = $"{BaseUrl}/speak"

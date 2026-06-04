@@ -74,8 +74,22 @@ def build_python() -> None:
         print(f"[ERROR] Spec file not found: {spec}")
         sys.exit(1)
 
-    packages = ["edge-tts", "fastapi", "uvicorn", "pyinstaller"]
-    run([sys.executable, "-m", "pip", "install", "--upgrade", "--quiet"] + packages)
+    packages = ["edge-tts", "pyinstaller"]
+    result = run([sys.executable, "-m", "pip", "install", "--upgrade"] + packages)
+    print(f"[DEBUG] pip install exit code: {result}")
+    print(f"[DEBUG] Python executable: {sys.executable}")
+
+    # Verify PyInstaller is actually available
+    import subprocess
+    check = subprocess.run(
+        [sys.executable, "-m", "PyInstaller", "--version"],
+        capture_output=True, text=True
+    )
+    print(f"[DEBUG] PyInstaller check stdout: {check.stdout.strip()}")
+    print(f"[DEBUG] PyInstaller check stderr: {check.stderr.strip()}")
+    if check.returncode != 0:
+        print("[ERROR] PyInstaller is not available after install, aborting")
+        sys.exit(1)
 
     tts_dist  = TTS_DIR / "dist"
     tts_build = TTS_DIR / "build"
@@ -88,12 +102,15 @@ def build_python() -> None:
         "--workpath", str(tts_build),
     ], cwd=TTS_DIR)
 
-    src_folder = tts_dist / "tts_server"
-    src_single = tts_dist / "tts_server_onefile.exe"
+    print(f"[DEBUG] tts_dist = {tts_dist}")
+    if tts_dist.exists():
+        for p in sorted(tts_dist.rglob("*")):
+            print(f"  {p}")
+    else:
+        print("[DEBUG] dist folder does not exist at all")
 
-    if src_folder.exists():
-        shutil.copytree(src_folder, DIST, dirs_exist_ok=True)
-    elif src_single.exists():
+    src_single = tts_dist / "tts_server.exe"
+    if src_single.exists():
         shutil.copy2(src_single, DIST / "tts_server.exe")
     else:
         print("[ERROR] PyInstaller produced no recognisable output")

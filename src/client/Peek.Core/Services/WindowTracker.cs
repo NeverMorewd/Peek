@@ -1,7 +1,5 @@
 ﻿using DynamicData;
 using Peek.Core.Models;
-using ReactiveUI;
-using System.Reactive.Linq;
 using System.Runtime.Versioning;
 using Windows.Win32;
 using Windows.Win32.Foundation;

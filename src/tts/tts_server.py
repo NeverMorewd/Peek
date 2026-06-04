@@ -1,129 +1,103 @@
-
 import argparse
 import asyncio
 import io
+import json
 import os
 import sys
 import tempfile
 import uuid
+from http.server import BaseHTTPRequestHandler, HTTPServer
+from urllib.parse import urlparse, parse_qs
+from threading import Thread
 
 import edge_tts
-import uvicorn
-from fastapi import FastAPI, Query, HTTPException
-from fastapi.responses import JSONResponse, StreamingResponse, FileResponse
 
 
-app = FastAPI(title="EdgeTTS Service", version="1.0.0", docs_url=None, redoc_url=None)
+def run_async(coro):
+    return asyncio.get_event_loop().run_until_complete(coro)
 
 
-@app.get("/health")
-async def health():
-    """Liveness probe – C# polls this after spawning the process."""
-    return {"status": "ok", "version": "1.0.0"}
+class TTSHandler(BaseHTTPRequestHandler):
+    def log_message(self, format, *args):
+        pass
 
+    def _send(self, status: int, content_type: str, body: bytes):
+        self.send_response(status)
+        self.send_header("Content-Type", content_type)
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
 
-@app.get("/voices")
-async def list_voices():
-    """
-    Return all voices supported by the Edge TTS service.
-    Response is a JSON array of voice objects, each containing:
-      Name, ShortName, Gender, Locale, SuggestedCodec, FriendlyName, Status
-    """
-    try:
-        voices = await edge_tts.list_voices()
-        return JSONResponse(content=voices)
-    except Exception as exc:
-        raise HTTPException(status_code=502, detail=f"Failed to fetch voices: {exc}") from exc
+    def _json(self, status: int, data):
+        self._send(status, "application/json", json.dumps(data).encode())
 
+    def do_GET(self):
+        parsed = urlparse(self.path)
+        qs = parse_qs(parsed.query)
+        p = parsed.path
 
-@app.get("/speak")
-async def speak(
-    text: str = Query(..., description="Text to synthesize"),
-    voice: str = Query("zh-CN-XiaoxiaoNeural", description="Edge TTS voice short name"),
-    rate: str = Query("+0%", description="Speech rate, e.g. +20% or -10%"),
-    volume: str = Query("+0%", description="Volume, e.g. +0% to +100%"),
-    pitch: str = Query("+0Hz", description="Pitch offset, e.g. +50Hz or -20Hz"),
-):
-    """
-    Synthesize *text* and stream the resulting MP3 back to the caller.
-    The C# client can download the bytes and write them to a temp file for playback.
-    """
-    if not text.strip():
-        raise HTTPException(status_code=400, detail="text must not be empty")
+        if p == "/health":
+            self._json(200, {"status": "ok", "version": "1.0.0"})
 
-    try:
-        communicate = edge_tts.Communicate(
-            text,
-            voice,
-            rate=rate,
-            volume=volume,
-            pitch=pitch,
-        )
+        elif p == "/voices":
+            try:
+                voices = run_async(edge_tts.list_voices())
+                self._json(200, voices)
+            except Exception as e:
+                self._json(502, {"detail": str(e)})
 
-        # Collect all audio chunks into a buffer so we can stream cleanly
-        buffer = io.BytesIO()
-        async for chunk in communicate.stream():
-            if chunk["type"] == "audio":
-                buffer.write(chunk["data"])
+        elif p == "/speak":
+            self._handle_speak(qs, stream=True)
 
-        if buffer.tell() == 0:
-            raise HTTPException(status_code=502, detail="Edge TTS returned no audio data")
+        elif p == "/speak/save":
+            self._handle_speak(qs, stream=False)
 
-        buffer.seek(0)
-        return StreamingResponse(buffer, media_type="audio/mpeg")
+        else:
+            self._json(404, {"detail": "not found"})
 
-    except HTTPException:
-        raise
-    except Exception as exc:
-        raise HTTPException(status_code=502, detail=f"TTS synthesis failed: {exc}") from exc
+    def _handle_speak(self, qs, stream: bool):
+        text   = qs.get("text",   [""])[0].strip()
+        voice  = qs.get("voice",  ["zh-CN-XiaoxiaoNeural"])[0]
+        rate   = qs.get("rate",   ["+0%"])[0]
+        volume = qs.get("volume", ["+0%"])[0]
+        pitch  = qs.get("pitch",  ["+0Hz"])[0]
 
+        if not text:
+            self._json(400, {"detail": "text must not be empty"})
+            return
 
-@app.get("/speak/save")
-async def speak_save(
-    text: str = Query(..., description="Text to synthesize"),
-    voice: str = Query("zh-CN-XiaoxiaoNeural", description="Edge TTS voice short name"),
-    rate: str = Query("+0%"),
-    volume: str = Query("+0%"),
-    pitch: str = Query("+0Hz"),
-):
-    """
-    Synthesize *text*, save to a temp MP3 file, and return the file path.
-    Useful when the C# host prefers to play a local file directly.
-    The caller is responsible for deleting the file after playback.
-    """
-    if not text.strip():
-        raise HTTPException(status_code=400, detail="text must not be empty")
+        try:
+            comm = edge_tts.Communicate(text, voice, rate=rate, volume=volume, pitch=pitch)
 
-    try:
-        communicate = edge_tts.Communicate(text, voice, rate=rate, volume=volume, pitch=pitch)
+            if stream:
+                buf = io.BytesIO()
+                async def collect():
+                    async for chunk in comm.stream():
+                        if chunk["type"] == "audio":
+                            buf.write(chunk["data"])
+                run_async(collect())
+                if buf.tell() == 0:
+                    self._json(502, {"detail": "no audio data"})
+                    return
+                buf.seek(0)
+                self._send(200, "audio/mpeg", buf.read())
+            else:
+                tmp = os.path.join(tempfile.gettempdir(), f"tts_{uuid.uuid4().hex}.mp3")
+                run_async(comm.save(tmp))
+                if not os.path.exists(tmp) or os.path.getsize(tmp) == 0:
+                    self._json(502, {"detail": "empty file"})
+                    return
+                self._json(200, {"path": tmp})
 
-        tmp_path = os.path.join(tempfile.gettempdir(), f"tts_{uuid.uuid4().hex}.mp3")
-        await communicate.save(tmp_path)
-
-        if not os.path.exists(tmp_path) or os.path.getsize(tmp_path) == 0:
-            raise HTTPException(status_code=502, detail="Edge TTS produced an empty file")
-
-        return JSONResponse({"path": tmp_path})
-
-    except HTTPException:
-        raise
-    except Exception as exc:
-        raise HTTPException(status_code=502, detail=f"TTS synthesis failed: {exc}") from exc
-
-
-def _parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="EdgeTTS HTTP microservice")
-    parser.add_argument("--host", default="127.0.0.1", help="Bind host (default: 127.0.0.1)")
-    parser.add_argument("--port", type=int, default=5050, help="Bind port (default: 5050)")
-    return parser.parse_args()
+        except Exception as e:
+            self._json(502, {"detail": str(e)})
 
 
 if __name__ == "__main__":
-    args = _parse_args()
-    uvicorn.run(
-        app,
-        host=args.host,
-        port=args.port,
-        log_level="warning",
-        access_log=False,
-    )
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--host", default="127.0.0.1")
+    parser.add_argument("--port", type=int, default=5050)
+    args = parser.parse_args()
+
+    server = HTTPServer((args.host, args.port), TTSHandler)
+    server.serve_forever()
