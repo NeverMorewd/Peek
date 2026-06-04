@@ -1,0 +1,25 @@
+name: Test GitHub Packages token
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # --- .NET ---
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Test
+        env:
+          GH_PAT: ${{ secrets.GH_PACKAGES_TOKEN }}
+        run: |
+          curl -u "NeverMorewd:$GH_PAT" https://nuget.pkg.github.com/NeverMorewd/index.json
+
