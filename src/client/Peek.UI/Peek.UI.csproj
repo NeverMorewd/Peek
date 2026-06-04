@@ -37,11 +37,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Views\LoadingIndicator.axaml.cs">
+      <DependentUpon>LoadingIndicator.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\SplashWindow.axaml.cs">
       <DependentUpon>SplashWindow.axaml</DependentUpon>
-    </Compile>
-    <Compile Update="Views\LoadingIndicatorView.axaml.cs">
-      <DependentUpon>LoadingIndicatorView.axaml</DependentUpon>
     </Compile>
     <Compile Update="Views\ElementTrackView.axaml.cs">
       <DependentUpon>ElementTrackView.axaml</DependentUpon>

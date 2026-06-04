@@ -50,7 +50,7 @@ public partial class App : Application
                 .AddSingleton<ElementTracker>()
                 .AddTransient<WindowTracker>()
                 .AddSingleton<IDisposeService, DisposeService>()
-                .AddTransient<LoadingIndicatorView>()
+                .AddTransient<LoadingIndicator>()
                 .AddSingleton<WindowsHookService>()
                 .AddSingleton<AudioPlayer>()
                 .AddSingleton<IColorChangedNotify, MainWindow>(sp => sp.GetRequiredService<MainWindow>())

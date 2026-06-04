@@ -37,16 +37,16 @@ namespace Peek.UI.Indicators
             return true;
         }
 
-        private static LoadingIndicatorView BuildLoadingIndicator(IServiceProvider sp, NavigationContext navigationContext)
+        private static LoadingIndicator BuildLoadingIndicator(IServiceProvider sp, NavigationContext navigationContext)
         {
-            var view = sp.GetRequiredService<LoadingIndicatorView>();
+            var view = sp.GetRequiredService<LoadingIndicator>();
             view.DataContext = navigationContext;
             return view;
         }
 
-        private static LoadingIndicatorView BuildErrorIndicator(IServiceProvider sp, NavigationContext navigationContext)
+        private static LoadingIndicator BuildErrorIndicator(IServiceProvider sp, NavigationContext navigationContext)
         {
-            return sp.GetRequiredService<LoadingIndicatorView>();
+            return sp.GetRequiredService<LoadingIndicator>();
         }
     }
 }
