@@ -11,12 +11,10 @@ client, a Rust UI Automation worker, and a Python Edge TTS service.
 | Dependency | Version | Notes |
 | --- | --- | --- |
 | AsyncNavigation | 2.0.2 | Navigation framework for Wpf/Avalonia applications. |
-| AsyncNavigation.Avalonia | 2.0.2 | Avalonia integration for AsyncNavigation. |
 | Avalonia | 12.0.3 | Cross-platform UI framework. |
 | LibVLCSharp | 3.9.7.1 | .NET bindings for libVLC. |
 | Microsoft.Windows.CsWin32 | 0.3.275 | Source generator for Windows API bindings. |
 | Pipboy.Avalonia | 1.1.1-preview.13 | Avalonia UI library. |
-| Pipboy.Avalonia.Fx | 1.1.1-preview.13 | Effects extensions for Pipboy.Avalonia. |
 | ProDataGrid | 12.0.0 | Data grid control for Avalonia. |
 | ReactiveUI.Avalonia | 12.0.1 | Avalonia integration for ReactiveUI. |
 | ReactiveUI.SourceGenerators | 2.6.30 | Source generators for ReactiveUI. |
