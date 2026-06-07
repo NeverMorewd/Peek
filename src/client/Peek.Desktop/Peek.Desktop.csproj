@@ -12,12 +12,17 @@
 
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>icon256.ico</ApplicationIcon>
   </PropertyGroup>
 
   <PropertyGroup Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net8.0'))">
 	<IsTrimmable>true</IsTrimmable>
 	<PublishTrimmed>true</PublishTrimmed>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="icon256.ico" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Avalonia.Desktop" />
