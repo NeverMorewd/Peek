@@ -25,6 +25,11 @@
                 CommandParameter="WindowTrackView"
                 Content="WindowTrack"
                 IsChecked="{Binding CurrentViewName, Converter={StaticResource ObjectToBoolConverter}, ConverterParameter='WindowTrackView'}" />
+            <ToggleButton
+                Command="{Binding NavigationCommand}"
+                CommandParameter="SettingsView"
+                Content="Settings"
+                IsChecked="{Binding CurrentViewName, Converter={StaticResource ObjectToBoolConverter}, ConverterParameter='SettingsView'}" />
         </StackPanel>
         <Border
             Grid.Column="0"

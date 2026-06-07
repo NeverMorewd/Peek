@@ -9,6 +9,14 @@
   <ItemGroup>
     <AvaloniaResource Include="Assets\**" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <EmbeddedResource Remove="Resources\Strings.zh-hans.resx" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Include="Resources\Strings.zh-hans.resx" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="AsyncNavigation.Avalonia" />
