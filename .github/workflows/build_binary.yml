@@ -26,16 +26,14 @@ jobs:
           GH_PAT: ${{ secrets.GH_PACKAGES_TOKEN }}
         shell: pwsh
         run: |
-          $template = "src/client/nuget.config"
-          if (-not (Test-Path $template)) {
-            Write-Error "nuget.config not found in repository root"
-            exit 1
-          }
-          $content = Get-Content $template -Raw
-          $content = $content.Replace('%GITHUB_TOKEN%', $env:GH_PAT)
-          $tempConfig = "nuget.actions.config"
-          $content | Out-File -FilePath $tempConfig -Encoding utf8
-          dotnet restore src/client/Peek.slnx --configfile $tempConfig
+          dotnet nuget add source `
+            https://nuget.pkg.github.com/NeverMorewd/index.json `
+            --name pipboy-preview `
+            --username NeverMorewd `
+            --password $env:GH_PAT `
+            --store-password-in-clear-text
+
+          dotnet restore src/client/Peek.slnx
 
       # --- Rust ---
       - name: Setup Rust
