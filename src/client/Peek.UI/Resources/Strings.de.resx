@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<data name="App_Title" xml:space="preserve">
+    <value>Peek</value>
+  </data>
+	<data name="Greeting_Message" xml:space="preserve">
+    <value>Willkommen bei Peek!</value>
+  </data>
+	<data name="Switch_Language" xml:space="preserve">
+    <value>Sprache wechseln</value>
+  </data>
+	<data name="Settings_Language" xml:space="preserve">
+    <value>Einstellungen</value>
+  </data>
+</root>

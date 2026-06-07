@@ -45,6 +45,7 @@ public partial class App : Application
         services.AddNavigationSupport(navigationOptions)
                 .RegisterDialogWindow<SplashWindow, SplashViewModel>("SplashWindow")
                 .RegisterView<ElementTrackView, ElementTrackViewModel>(nameof(ElementTrackView))
+                .RegisterView<SettingsView, SettingsViewModel>(nameof(SettingsView))
                 .RegisterInnerIndicatorProvider<ProgressIndicatorProvider>()
                 .AddSingleton<MainWindow>()
                 .AddSingleton<ElementTracker>()
