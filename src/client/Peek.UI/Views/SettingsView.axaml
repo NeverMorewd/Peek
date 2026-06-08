@@ -1,0 +1,129 @@
+﻿<UserControl
+    x:Class="Peek.UI.Views.SettingsView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:an="https://github.com/NeverMorewd/AsyncNavigation"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:Peek.Core.Models"
+    xmlns:vm="using:Peek.Core.ViewModels"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    x:DataType="{x:Type vm:SettingsViewModel}"
+    mc:Ignorable="d">
+    <ScrollViewer>
+        <Grid Margin="12">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+            </Grid.RowDefinitions>
+
+            <GroupBox
+                Grid.Row="0"
+                Height="200"
+                Margin="4,4,4,12"
+                FontSize="13">
+                <GroupBox.Header>
+                    <SelectableTextBlock
+                        Height="30"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Bottom"
+                        Text="{Binding DisplayLanguage^}" />
+                </GroupBox.Header>
+                <StackPanel
+                    Height="50"
+                    Margin="8"
+                    VerticalAlignment="Top"
+                    Orientation="Horizontal"
+                    Spacing="4">
+                    <TextBlock
+                        Margin="0,8,0,0"
+                        VerticalAlignment="Top"
+                        FontSize="12"
+                        Opacity="0.6"
+                        Text="{Binding DisplayLanguage^}" />
+                    <ComboBox
+                        x:Name="LanguageComboBox"
+                        Width="150"
+                        Height="40"
+                        VerticalAlignment="Top"
+                        ItemsSource="{Binding Languages}"
+                        SelectedItem="{Binding CurrentCulture}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate DataType="{x:Type models:LanguageItem}">
+                                <TextBlock Text="{Binding Key}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </StackPanel>
+            </GroupBox>
+
+            <GroupBox
+                Grid.Row="1"
+                Margin="4"
+                Header="Voice"
+                IsVisible="False">
+                <StackPanel Margin="8">
+                    <TextBlock
+                        Margin="0,0,0,6"
+                        FontSize="12"
+                        Opacity="0.6"
+                        Text="TTS Voice" />
+                    <ComboBox
+                        x:Name="VoiceComboBox"
+                        Width="280"
+                        Height="40"
+                        Margin="0,0,0,12"
+                        HorizontalAlignment="Left" />
+
+                    <TextBlock
+                        Margin="0,0,0,4"
+                        FontSize="12"
+                        Opacity="0.6"
+                        Text="Speed" />
+                    <StackPanel Margin="0,0,0,12" Orientation="Horizontal">
+                        <Slider
+                            x:Name="SpeedSlider"
+                            Width="200"
+                            VerticalAlignment="Center"
+                            IsSnapToTickEnabled="True"
+                            Maximum="10"
+                            Minimum="-10"
+                            TickFrequency="1"
+                            Value="0" />
+                        <TextBlock
+                            Width="32"
+                            Margin="8,0,0,0"
+                            VerticalAlignment="Center"
+                            Text="{Binding ElementName=SpeedSlider, Path=Value, StringFormat={}{0:+0;-0;0}}" />
+                    </StackPanel>
+
+                    <TextBlock
+                        Margin="0,0,0,4"
+                        FontSize="12"
+                        Opacity="0.6"
+                        Text="Volume" />
+                    <StackPanel Margin="0,0,0,12" Orientation="Horizontal">
+                        <Slider
+                            x:Name="VolumeSlider"
+                            Width="200"
+                            VerticalAlignment="Center"
+                            Maximum="100"
+                            Minimum="0"
+                            Value="100" />
+                        <TextBlock
+                            Width="40"
+                            Margin="8,0,0,0"
+                            VerticalAlignment="Center"
+                            Text="{Binding ElementName=VolumeSlider, Path=Value, StringFormat={}{0:0}%}" />
+                    </StackPanel>
+
+                    <Button
+                        Width="100"
+                        HorizontalAlignment="Left"
+                        Content="▶  Preview" />
+                </StackPanel>
+            </GroupBox>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

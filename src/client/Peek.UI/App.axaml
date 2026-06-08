@@ -13,5 +13,6 @@
         <pipboy:PipboyTheme />
         <pipboy:PipboyFxTheme />
         <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.v2.xaml" />
+        <!--<SimpleTheme />-->
     </Application.Styles>
 </Application>

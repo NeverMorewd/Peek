@@ -1,4 +1,4 @@
-<UserControl
+﻿<UserControl
     x:Class="Peek.UI.Views.LoadingIndicator"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -9,12 +9,12 @@
     d:DesignWidth="800"
     mc:Ignorable="d">
     <pipboy:CrtDisplay Name="MainCrt">
-        <Grid Width="512" Height="512">
+        <Grid >
             <Border
                 Background="Transparent"
                 BorderBrush="{DynamicResource PipboyPrimaryBrush}"
                 BorderThickness="4">
-                <Grid>
+                <Grid Width="512" Height="512">
                     <Canvas>
                         <Path
                             Data="M 50,255 Q 256,40 462,255 Q 256,470 50,255 Z"

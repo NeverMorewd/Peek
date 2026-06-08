@@ -9,11 +9,11 @@
   <ItemGroup>
     <AvaloniaResource Include="Assets\**" />
   </ItemGroup>
+  
 
   <ItemGroup>
     <PackageReference Include="AsyncNavigation.Avalonia" />
     <PackageReference Include="Avalonia" />
-    <PackageReference Include="Avalonia.Themes.Fluent" />
     <PackageReference Include="Avalonia.Fonts.Inter" />
     <PackageReference Include="AvaloniaUI.DiagnosticsSupport">
       <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
@@ -32,8 +32,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\libs\Irihi.Lingua\src\Irihi.Lingua.Avalonia\Irihi.Lingua.Avalonia.csproj" />
+    <ProjectReference Include="..\..\libs\Irihi.Lingua\src\Irihi.Lingua.Core\Irihi.Lingua.Core.csproj" />
+    <ProjectReference Include="..\..\libs\Irihi.Lingua\src\Irihi.Lingua.Generator\Irihi.Lingua.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     <ProjectReference Include="..\Peek.Core\Peek.Core.csproj" />
-    <ProjectReference Include="..\Peek.Ipc\Peek.Ipc.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,0 +1,3 @@
+[submodule "src/libs/Irihi.Lingua"]
+	path = src/libs/Irihi.Lingua
+	url = https://github.com/NeverMorewd/Irihi.Lingua.git
