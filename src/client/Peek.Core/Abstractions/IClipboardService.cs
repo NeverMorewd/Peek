@@ -13,4 +13,7 @@ public interface IClipboardService
     /// Pass null to clear the clipboard.
     /// </summary>
     Task SetTextAsync(string? text);
+
+    Task ClearAsync();
+    Task<IEnumerable<string>?> GetDataFormatsIdAsync();
 }

@@ -1,12 +1,14 @@
-using AsyncNavigation;
+﻿using AsyncNavigation;
 using AsyncNavigation.Abstractions;
 using AsyncNavigation.Core;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Irihi.Lingua;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Peek.Core.Abstractions;
+using Peek.Core.i18n;
 using Peek.Core.Services;
 using Peek.Core.ViewModels;
 using Peek.Ipc.DependencyInjection;
@@ -48,6 +50,7 @@ public partial class App : Application
                 .RegisterView<SettingsView, SettingsViewModel>(nameof(SettingsView))
                 .RegisterInnerIndicatorProvider<ProgressIndicatorProvider>()
                 .AddSingleton<MainWindow>()
+                .AddSingleton<ILinguaManager>(LanguageManager.Instance)
                 .AddSingleton<ElementTracker>()
                 .AddTransient<WindowTracker>()
                 .AddSingleton<IDisposeService, DisposeService>()

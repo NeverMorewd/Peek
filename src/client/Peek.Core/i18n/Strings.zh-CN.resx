@@ -4,12 +4,12 @@
     <value>Peek</value>
   </data>
   <data name="Greeting_Message" xml:space="preserve">
-    <value>Welcome to Peek!</value>
+    <value>欢迎来到Peek</value>
   </data>
   <data name="Switch_Language" xml:space="preserve">
-    <value>Switch Language</value>
+    <value>切换到英文</value>
   </data>
-  <data name="Settings_Language" xml:space="preserve">
-    <value>Settings</value>
+	<data name="Settings_Language" xml:space="preserve">
+    <value>设置</value>
   </data>
 </root>
