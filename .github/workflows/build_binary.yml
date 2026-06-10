@@ -59,7 +59,7 @@ jobs:
       - name: Build C#
         shell: pwsh
         run: |
-          $proj = "src/client/Peek.Desktop/Peek.Desktop.proj"
+          $proj = "src/client/Peek.Desktop/Peek.Desktop.csproj"
 
           dotnet publish $proj `
             -c Release `
