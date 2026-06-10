@@ -76,9 +76,7 @@ public partial class WindowTrackViewModel : ViewModelBase, IDisposable
         _logger = logger;
         RefreshCommand = ReactiveCommand.CreateFromTask(async () =>
         {
-            IsRefreshing = true;
-            //await Task.Run(_tracker.Refresh);
-            IsRefreshing = false;
+            await LoadSnapshotAsync();
         });
 
         ClearSearchCommand = ReactiveCommand.Create(() => { SearchText = string.Empty; });
@@ -90,9 +88,11 @@ public partial class WindowTrackViewModel : ViewModelBase, IDisposable
     }
     public async override Task OnNavigatedToAsync(NavigationContext context)
     {
-        await base.OnNavigatedToAsync(context);
-        await Task.Delay(TimeSpan.FromMilliseconds(2000));
-
+        await base.OnNavigatedToAsync(context);    
+    }
+    public override async Task InitializeAsync(NavigationContext context)
+    {
+        await base.InitializeAsync(context);
         this.WhenAnyValue(x => x.IsLiveMonitoring)
             .Subscribe(v =>
             {
@@ -101,17 +101,6 @@ public partial class WindowTrackViewModel : ViewModelBase, IDisposable
             })
             .DisposeWith(_disposables);
 
-        //_liveMonitoringSubject
-        //    .DistinctUntilChanged()
-        //    .Select(live => live
-        //        ? _tracker.Changes
-        //        : Observable.Never<IReadOnlyList<WindowChange>>())
-        //    .Switch()
-        //    .ObserveOn(RxSchedulers.MainThreadScheduler)
-        //    .Subscribe(ApplyChanges)
-        //    .DisposeWith(_disposables);
-
-        // ── Filter rebuild ────────────────────────────────────────────────────
         this.WhenAnyValue(
                 x => x.SearchText,
                 x => x.ShowOnlyVisible,
@@ -124,20 +113,33 @@ public partial class WindowTrackViewModel : ViewModelBase, IDisposable
             .Subscribe((_) => RebuildTree())
             .DisposeWith(_disposables);
 
-        LoadInitialSnapshot(_tracker.EnumerateAll());
+        await LoadSnapshotAsync();
 
         await Task.Delay(TimeSpan.FromMilliseconds(1000));
     }
 
-    private void LoadInitialSnapshot(IReadOnlyList<WindowNode> nodes)
+    private async Task LoadSnapshotAsync()
     {
-        _logger.LogDebug("Loading initial snapshot: {Count} windows", nodes.Count);
+        IsRefreshing = true;
+        _logger.LogDebug("Loading snapshot in background...");
 
-        foreach (var node in nodes)
-            _index[node.Hwnd] = new WindowItemViewModel(node);
+        await Task.Delay(100);
+
+        var nodes = await Task.Run(() => _tracker.EnumerateAll());
+
+        var newIndex = await Task.Run(() =>
+            nodes.ToDictionary(n => n.Hwnd, n => new WindowItemViewModel(n)));
+
+        _index.Clear();
+        foreach (var (hwnd, vm) in newIndex)
+            _index[hwnd] = vm;
 
         TotalCount = _index.Count;
+
+        _logger.LogDebug("Snapshot loaded: {Count} windows", TotalCount);
+
         RebuildTree();
+        IsRefreshing = false;
     }
 
     private void ApplyChanges(IReadOnlyList<WindowChange> changes)
