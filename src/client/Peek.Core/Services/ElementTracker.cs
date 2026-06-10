@@ -139,10 +139,8 @@ public partial class ElementTracker : ReactiveObject, IDisposable
 
         _logger.LogDebug("Get element: {Name}; rect: {Rect}", info.Name, info.Rect);
 
-        // Cancel and replace the previous CTS with a fresh independent one
-        // Do NOT link to ct here – ct is already cancelled by .Switch()
         var oldCts = _ttsCts;
-        _ttsCts = new CancellationTokenSource();  // fresh, not linked to anything
+        _ttsCts = new CancellationTokenSource();
         await oldCts.CancelAsync();
         oldCts.Dispose();
 
@@ -198,15 +196,16 @@ public partial class ElementTracker : ReactiveObject, IDisposable
                 });
             });
 
-        _mouseTracker.SelectedTextStream.Subscribe(async t =>
-        {
-            var voiceBytes =
-            await _tsService.GetVoiceAsync(
-                $"Selected text is {t}");
+        /// disable mouse select monitor for now
+        //_mouseTracker.SelectedTextStream.Subscribe(async t =>
+        //{
+        //    var voiceBytes =
+        //    await _tsService.GetVoiceAsync(
+        //        $"Selected text is {t}");
 
-            _audioPlayer.Stop();
-            await _audioPlayer.PlayBytesAsync(voiceBytes);
-        });
+        //    _audioPlayer.Stop();
+        //    await _audioPlayer.PlayBytesAsync(voiceBytes);
+        //});
         return Task.CompletedTask;
     }
 
