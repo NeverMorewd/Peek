@@ -16,5 +16,5 @@
     WindowDecorations="BorderOnly"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
-    <views:LoadingIndicator />
+    <views:LoadingIndicator Margin="1" />
 </Window>
