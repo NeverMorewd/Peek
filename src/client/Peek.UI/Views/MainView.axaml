@@ -13,6 +13,7 @@
     <Grid Margin="10" ColumnDefinitions="200,*">
         <StackPanel
             Grid.Column="0"
+            Margin="2"
             Orientation="Vertical"
             Spacing="10">
             <ToggleButton
@@ -32,14 +33,14 @@
                 IsChecked="{Binding CurrentViewName, Converter={StaticResource ObjectToBoolConverter}, ConverterParameter='SettingsView'}" />
         </StackPanel>
         <Border
-            Grid.Column="0"
-            Width="2"
-            HorizontalAlignment="Right"
+            Grid.Column="1"
+            Margin="2"
+            HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
-            Background="{DynamicResource PipboyPrimaryBrush}"
-            BorderBrush="Transparent"
-            BorderThickness="0" />
-        <ContentControl Grid.Column="1" an:RegionManager.RegionName="MainRegion" />
+            BorderBrush="{DynamicResource PipboyPrimaryDarkBrush}"
+            BorderThickness="1">
+            <ContentControl Padding="4" an:RegionManager.RegionName="MainRegion" />
+        </Border>
     </Grid>
 
 </UserControl>

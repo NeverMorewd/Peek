@@ -166,7 +166,7 @@
                     Header="HWND">
                     <DataGridHierarchicalColumn.CellTemplate>
                         <DataTemplate x:DataType="vm:WindowItemViewModel">
-                            <TextBlock
+                            <SelectableTextBlock
                                 VerticalAlignment="Center"
                                 FontFamily="Consolas,Menlo,monospace"
                                 Foreground="{DynamicResource PipboyPrimaryLightBrush}"
@@ -179,7 +179,7 @@
                 <DataGridTemplateColumn Width="2.5*" Header="Title">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate x:DataType="hier:HierarchicalNode">
-                            <TextBlock
+                            <SelectableTextBlock
                                 VerticalAlignment="Center"
                                 x:DataType="vm:WindowItemViewModel"
                                 DataContext="{Binding Item}"
@@ -195,7 +195,7 @@
                 <DataGridTemplateColumn Width="1.5*" Header="Class">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate x:DataType="hier:HierarchicalNode">
-                            <TextBlock
+                            <SelectableTextBlock
                                 VerticalAlignment="Center"
                                 x:DataType="vm:WindowItemViewModel"
                                 DataContext="{Binding Item}"
@@ -218,11 +218,11 @@
                                 DataContext="{Binding Item}"
                                 Orientation="Horizontal"
                                 Spacing="3">
-                                <TextBlock
+                                <SelectableTextBlock
                                     Foreground="{DynamicResource PipboyTextBrush}"
                                     Text="{Binding ProcessName}"
                                     TextTrimming="CharacterEllipsis" />
-                                <TextBlock
+                                <SelectableTextBlock
                                     VerticalAlignment="Center"
                                     FontSize="10"
                                     Foreground="{DynamicResource PipboyTextDimBrush}"
@@ -257,59 +257,72 @@
                                 Orientation="Horizontal"
                                 Spacing="2">
 
-                                <!--  V = Visible  -->
                                 <Border
-                                    Padding="3,0"
-                                    Background="{DynamicResource PipboySuccessBrush}"
-                                    CornerRadius="2"
+                                    Padding="3"
+                                    BorderBrush="{DynamicResource PipboyPrimaryBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="0"
                                     IsVisible="{Binding IsVisible}"
-                                    ToolTip.Tip="Visible">
+                                    ToolTip.Tip="Visible: Window is shown on screen">
                                     <TextBlock
                                         FontSize="10"
                                         FontWeight="Bold"
-                                        Foreground="{DynamicResource PipboyTextBrush}"
+                                        Foreground="{DynamicResource PipboyTextDimBrush}"
                                         Text="V" />
                                 </Border>
 
-                                <!--  E = Enabled  -->
                                 <Border
-                                    Padding="3,0"
-                                    Background="{DynamicResource PipboyPrimaryBrush}"
-                                    CornerRadius="2"
+                                    Padding="3"
+                                    BorderBrush="{DynamicResource PipboyPrimaryBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="0"
                                     IsVisible="{Binding IsEnabled}"
-                                    ToolTip.Tip="Enabled">
+                                    ToolTip.Tip="Enabled: Window accepts user input">
                                     <TextBlock
                                         FontSize="10"
-                                        Foreground="{DynamicResource PipboyPrimaryLightBrush}"
+                                        Foreground="{DynamicResource PipboyTextDimBrush}"
                                         Text="E" />
                                 </Border>
 
-                                <!--  ↓ = Minimized  -->
-                                <TextBlock
-                                    VerticalAlignment="Center"
-                                    FontSize="11"
-                                    Foreground="{DynamicResource PipboyTextDimBrush}"
+                                <Border
+                                    Padding="3"
+                                    BorderBrush="{DynamicResource PipboyPrimaryBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="0"
                                     IsVisible="{Binding IsMinimized}"
-                                    Text="↓"
-                                    ToolTip.Tip="Minimized" />
+                                    ToolTip.Tip="Minimized: Window is collapsed to taskbar">
+                                    <TextBlock
+                                        FontSize="10"
+                                        Foreground="{DynamicResource PipboyTextDimBrush}"
+                                        Text="↓" />
+                                </Border>
 
-                                <!--  ↑ = Maximized  -->
-                                <TextBlock
-                                    VerticalAlignment="Center"
-                                    FontSize="11"
-                                    Foreground="{DynamicResource PipboyPrimaryLightBrush}"
+                                <Border
+                                    Padding="3"
+                                    BorderBrush="{DynamicResource PipboyPrimaryBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="0"
                                     IsVisible="{Binding IsMaximized}"
-                                    Text="↑"
-                                    ToolTip.Tip="Maximized" />
+                                    ToolTip.Tip="Maximized: Window fills the entire screen">
+                                    <TextBlock
+                                        FontSize="10"
+                                        Foreground="{DynamicResource PipboyTextDimBrush}"
+                                        Text="↑" />
+                                </Border>
 
-                                <!--  T = Topmost  -->
-                                <TextBlock
-                                    VerticalAlignment="Center"
-                                    FontSize="10"
-                                    Foreground="{DynamicResource PipboyWarningBrush}"
+                                <Border
+                                    Padding="3"
+                                    BorderBrush="{DynamicResource PipboyPrimaryBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="0"
                                     IsVisible="{Binding IsTopmost}"
-                                    Text="T"
-                                    ToolTip.Tip="Topmost (WS_EX_TOPMOST)" />
+                                    ToolTip.Tip="Topmost: Window stays above all others (WS_EX_TOPMOST)">
+                                    <TextBlock
+                                        FontSize="10"
+                                        Foreground="{DynamicResource PipboyTextDimBrush}"
+                                        Text="T" />
+                                </Border>
+
                             </StackPanel>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
@@ -319,7 +332,7 @@
                 <DataGridTemplateColumn Width="96" Header="Style">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate x:DataType="hier:HierarchicalNode">
-                            <TextBlock
+                            <SelectableTextBlock
                                 VerticalAlignment="Center"
                                 x:DataType="vm:WindowItemViewModel"
                                 DataContext="{Binding Item}"
@@ -335,7 +348,7 @@
                 <DataGridTemplateColumn Width="96" Header="ExStyle">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate x:DataType="hier:HierarchicalNode">
-                            <TextBlock
+                            <SelectableTextBlock
                                 VerticalAlignment="Center"
                                 x:DataType="vm:WindowItemViewModel"
                                 DataContext="{Binding Item}"
@@ -346,7 +359,6 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-
             </DataGrid.Columns>
         </DataGrid>
 

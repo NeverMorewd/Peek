@@ -14,6 +14,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with: 
+          submodules: recursive
 
       # --- .NET ---
       - name: Setup .NET
@@ -54,16 +56,15 @@ jobs:
           if (Test-Path $dist) { Remove-Item -Recurse -Force $dist }
           New-Item -ItemType Directory -Path $dist -Force
 
-      - name: Build C# (AOT)
+      - name: Build C#
         shell: pwsh
         run: |
-          $slnx = "src/client/Peek.slnx"
+          $proj = "src/client/Peek.Desktop/Peek.Desktop.csproj"
 
-          dotnet publish $slnx `
+          dotnet publish $proj `
             -c Release `
             -r win-x64 `
             --self-contained true `
-            -p:PublishAot=true `
             -p:StripSymbols=true `
             -o dist/win-x64
 
