@@ -1,10 +1,13 @@
-﻿using AsyncNavigation.Abstractions;
+﻿using AsyncNavigation;
+using AsyncNavigation.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Peek.Core.Abstractions;
 using Peek.Core.Services;
+using ReactiveUI;
 using ReactiveUI.SourceGenerators;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 
 namespace Peek.Core.ViewModels;
 
@@ -15,6 +18,8 @@ public partial class MainViewModel : ViewModelBase, IDisposable
     private readonly IRegionManager _regionManager;
     private readonly IViewManager _viewManager;
     private readonly IDisposeService _disposeService;
+    private readonly IMouseTracker _mouseTracker;
+    private readonly IDialogService _dialogService;
 
     [Reactive]
     private ColorPickerViewModel _titleBarContext;
@@ -26,6 +31,8 @@ public partial class MainViewModel : ViewModelBase, IDisposable
         _titleBarContext = serviceProvider.GetRequiredService<ColorPickerViewModel>();
         _regionManager = serviceProvider.GetRequiredService<IRegionManager>();
         _viewManager = serviceProvider.GetRequiredService<IViewManager>();
+        _mouseTracker = serviceProvider.GetRequiredService<IMouseTracker>();
+        _dialogService = serviceProvider.GetRequiredService<IDialogService>();
 
         _disposeService = serviceProvider.GetRequiredService<IDisposeService>();
         _ = serviceProvider.GetRequiredService<AudioPlayer>().VlcInitializeAsync();
@@ -57,5 +64,11 @@ public partial class MainViewModel : ViewModelBase, IDisposable
     {
 
         var ret = await _regionManager.RequestNavigateAsync("MainRegion", "ElementTrackView");
+        _mouseTracker.SelectedStream
+            .ObserveOn(RxSchedulers.MainThreadScheduler)
+            .Subscribe(_ => 
+            {
+                
+            });
     }
 }

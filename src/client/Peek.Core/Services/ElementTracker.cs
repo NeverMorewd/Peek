@@ -1,4 +1,4 @@
-﻿using DynamicData.Binding;
+﻿//using DynamicData.Binding;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Peek.Core.Abstractions;
@@ -6,8 +6,6 @@ using Peek.Ipc.Connection;
 using Peek.Ipc.Extensions;
 using Peek.Ipc.Protocol;
 using ReactiveUI;
-using ReactiveUI.SourceGenerators;
-using Splat;
 using System.Data;
 using System.Diagnostics;
 using System.Reactive.Disposables;
@@ -15,6 +13,7 @@ using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
 using ConnectionState = Peek.Ipc.Connection.ConnectionState;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
+using ReactiveUI.Primitives;
 
 namespace Peek.Core.Services;
 
@@ -195,17 +194,6 @@ public partial class ElementTracker : ReactiveObject, IDisposable
                     Height = info.Rect.Height
                 });
             });
-
-        /// disable mouse select monitor for now
-        //_mouseTracker.SelectedTextStream.Subscribe(async t =>
-        //{
-        //    var voiceBytes =
-        //    await _tsService.GetVoiceAsync(
-        //        $"Selected text is {t}");
-
-        //    _audioPlayer.Stop();
-        //    await _audioPlayer.PlayBytesAsync(voiceBytes);
-        //});
         return Task.CompletedTask;
     }
 
