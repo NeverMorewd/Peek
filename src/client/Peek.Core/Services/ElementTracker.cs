@@ -13,7 +13,6 @@ using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
 using ConnectionState = Peek.Ipc.Connection.ConnectionState;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
-using ReactiveUI.Primitives;
 
 namespace Peek.Core.Services;
 
