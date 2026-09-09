@@ -5,7 +5,7 @@ using ReactiveUI;
 using ReactiveUI.SourceGenerators;
 using System.Collections.ObjectModel;
 using System.Globalization;
-using System.Reactive.Linq;
+using ReactiveUI.Primitives;
 
 namespace Peek.Core.ViewModels;
 

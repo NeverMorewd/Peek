@@ -6,11 +6,13 @@ using Peek.Ipc.Connection;
 using Peek.Ipc.Extensions;
 using Peek.Ipc.Protocol;
 using ReactiveUI;
+using ReactiveUI.Primitives;
+using ReactiveUI.Primitives.Disposables;
+using ReactiveUI.Primitives.Extensions;
+using ReactiveUI.Primitives.Signals;
+using ReactiveUI.SourceGenerators;
 using System.Data;
 using System.Diagnostics;
-using System.Reactive.Disposables;
-using System.Reactive.Disposables.Fluent;
-using System.Reactive.Linq;
 using ConnectionState = Peek.Ipc.Connection.ConnectionState;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
@@ -18,8 +20,8 @@ namespace Peek.Core.Services;
 
 public partial class ElementTracker : ReactiveObject, IDisposable
 {
-    private readonly CompositeDisposable _disposables = [];
-    private readonly SerialDisposable _trackingDisposable = new();
+    private readonly MultipleDisposable _disposables = [];
+    private SingleReplaceableDisposable _trackingDisposable;
     private readonly WorkerConnection _workerConnection;
     private readonly IMouseTracker _mouseTracker;
     private readonly ILogger _logger;
@@ -54,8 +56,8 @@ public partial class ElementTracker : ReactiveObject, IDisposable
             .Skip(1)
             .ObserveOn(RxSchedulers.MainThreadScheduler)
             .SelectMany(on => on
-                ? Observable.FromAsync(StartTrackingCore)
-                : Observable.FromAsync(StopTrackingCore))
+                ? Signal.FromAsync(StartTrackingCore)
+                : Signal.FromAsync(StopTrackingCore))
             .Subscribe()
             .DisposeWith(_disposables);
 
@@ -106,11 +108,11 @@ public partial class ElementTracker : ReactiveObject, IDisposable
 
         await _tsService.EnsureStartedAsync();
         // CancellationTokenSource for aborting in-flight TTS requests
-        this.WhenValueChanged(vm => vm.CurrentElement)
+        this.WhenAnyValue(vm => vm.CurrentElement)
                     .DistinctUntilChanged()
                     .Throttle(TimeSpan.FromMilliseconds(300))
                     .ObserveOn(RxSchedulers.MainThreadScheduler)
-                    .Select(info => Observable.FromAsync(async ct =>
+                    .Select(info => Signal.FromAsync(async ct =>
                     {
                         try
                         {
@@ -121,6 +123,7 @@ public partial class ElementTracker : ReactiveObject, IDisposable
                         {
                             await _highlightService.StopBreathAsync();
                         }
+                        return RxVoid.Default;
                     }))
                     .Switch()
                     .Subscribe(
@@ -161,22 +164,22 @@ public partial class ElementTracker : ReactiveObject, IDisposable
             _logger.LogError(ex, "SpeakAsync failed for element: {Name}", info.Name);
         }
     }
-    private Task StartTrackingCore()
+    private Task<RxVoid> StartTrackingCore()
     {
-        if (_trackingDisposable.Disposable is not null &&
-            _trackingDisposable.Disposable != Disposable.Empty)
+        if (_trackingDisposable is not null &&
+            !_trackingDisposable.IsDisposed)
         {
             _mouseTracker.Resume();
             _highlightService.Resume();
-            return Task.CompletedTask;
+            return Task.FromResult(RxVoid.Default);
         }
 
         var isFirst = true;
-        _trackingDisposable.Disposable = _workerConnection
+        _trackingDisposable = new SingleReplaceableDisposable(_workerConnection
             .TrackMouseElement(
                 _mouseTracker.MousePositionStream.Select(p => (p.X, p.Y)),
                 throttle: TimeSpan.FromMilliseconds(10))
-            .WhereNotNull()
+            .WhereIsNotNull()
             .ObserveOn(RxSchedulers.MainThreadScheduler)
             .Do(info =>
             {
@@ -192,15 +195,15 @@ public partial class ElementTracker : ReactiveObject, IDisposable
                     Width = info.Rect.Width,
                     Height = info.Rect.Height
                 });
-            });
-        return Task.CompletedTask;
+            }));  
+        return Task.FromResult(RxVoid.Default);
     }
 
-    private Task StopTrackingCore()
+    private Task<RxVoid> StopTrackingCore()
     {
         _mouseTracker.Pause();
         CurrentElement = null;
         _highlightService.Hide();
-        return Task.CompletedTask;
+        return Task.FromResult(RxVoid.Default);
     }
 }

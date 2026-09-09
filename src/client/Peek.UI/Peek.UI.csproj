@@ -25,7 +25,10 @@
     <PackageReference Include="Pipboy.Avalonia.Fx" />
     <PackageReference Include="ProDataGrid" />
     <PackageReference Include="ReactiveUI.Avalonia" />
-	<PackageReference Include="ReactiveUI.SourceGenerators" />
+	<PackageReference Include="ReactiveUI.SourceGenerators">
+	  <PrivateAssets>all</PrivateAssets>
+	  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	</PackageReference>
 	<PackageReference Include="AsyncNavigation" />
 	<PackageReference Include="Pipboy.Avalonia" />
 	<PackageReference Include="Avalonia.Themes.Simple" />

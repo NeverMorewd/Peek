@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using Peek.Core.Models;
 using Peek.Core.Abstractions;
+using ReactiveUI.Primitives;
 
 namespace Peek.Core.ViewModels;
 

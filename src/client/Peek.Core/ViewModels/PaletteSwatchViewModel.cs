@@ -1,8 +1,6 @@
-﻿using ReactiveUI;
-using System;
-using System.Reactive;
-
-using Peek.Core.Models;
+﻿using Peek.Core.Models;
+using ReactiveUI;
+using ReactiveUI.Primitives;
 
 namespace Peek.Core.ViewModels;
 
@@ -19,7 +17,7 @@ public class PaletteSwatchViewModel : ReactiveObject
 
     public event Action<ColorModel>? Selected;
 
-    public ReactiveCommand<Unit, Unit> SelectCommand { get; }
+    public ReactiveCommand<RxVoid, RxVoid> SelectCommand { get; }
 
     public PaletteSwatchViewModel(ColorModel color)
     {

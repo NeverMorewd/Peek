@@ -1,7 +1,4 @@
-﻿using DynamicData;
-using Peek.Core.Models;
-using ReactiveUI;
-using System.Reactive.Linq;
+﻿using Peek.Core.Models;
 using System.Runtime.Versioning;
 using Windows.Win32;
 using Windows.Win32.Foundation;
@@ -28,7 +25,7 @@ public sealed class WindowTracker : IDisposable
     private int _disposed;
     public event EventHandler<ForegroundWindowChangedArgs>? ForegroundWindowChanged;
 
-    private readonly SourceCache<WindowNode, nint> _windowNodeCache = new(node => node.Hwnd);
+    //private readonly SourceCache<WindowNode, nint> _windowNodeCache = new(node => node.Hwnd);
 
     public WindowTracker(WindowsHookService hookService, WindowEnumerator windowEnumerator)
     {

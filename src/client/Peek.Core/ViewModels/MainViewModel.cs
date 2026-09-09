@@ -1,19 +1,18 @@
-﻿using AsyncNavigation;
-using AsyncNavigation.Abstractions;
+﻿using AsyncNavigation.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Peek.Core.Abstractions;
 using Peek.Core.Services;
 using ReactiveUI;
+using ReactiveUI.Primitives.Disposables;
 using ReactiveUI.SourceGenerators;
-using System.Reactive.Disposables;
-using System.Reactive.Linq;
+using ReactiveUI.Primitives;
 
 namespace Peek.Core.ViewModels;
 
 public partial class MainViewModel : ViewModelBase, IDisposable
 {
-    private readonly CompositeDisposable _disposables = [];
+    private readonly MultipleDisposable _disposables = [];
     private readonly ILogger _logger;
     private readonly IRegionManager _regionManager;
     private readonly IViewManager _viewManager;
