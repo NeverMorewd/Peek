@@ -1,7 +1,8 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Win32.SafeHandles;
 using Peek.Core.Models;
-using System.Reactive.Linq;
+using ReactiveUI.Primitives.Disposables;
+using ReactiveUI.Primitives.Signals;
 using System.Runtime.Versioning;
 using Windows.Win32;
 using Windows.Win32.Foundation;
@@ -44,7 +45,7 @@ public sealed class WindowEnumerator
     }
     public IObservable<WindowNode> EnumerateObservable(bool includeChildren = true)
     {
-        return Observable.Create<WindowNode>(observer =>
+        return Signal.Create<WindowNode>(observer =>
         {
             _processNameCache.Clear();
 
@@ -76,7 +77,7 @@ public sealed class WindowEnumerator
             {
                 observer.OnError(ex);
             }
-            return () => { };
+            return new ActionDisposable(() => { });
         });
     }
     private void EnumerateChildrenObservable(HWND parentHwnd, 

@@ -5,8 +5,8 @@ using Peek.Ipc.Client;
 using Peek.Ipc.Transport;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
+using ReactiveUI.Primitives;
+using ReactiveUI.Primitives.Signals;
 
 namespace Peek.Ipc.Connection;
 
@@ -17,7 +17,7 @@ public sealed class WorkerConnection(WorkerConnectionOptions options,
     private readonly ILoggerFactory _loggerFactory = loggerFactory;
     private readonly ILogger<WorkerConnection> _logger = loggerFactory.CreateLogger<WorkerConnection>();
 
-    private readonly BehaviorSubject<ConnectionState> _stateSubject =
+    private readonly BehaviorSignal<ConnectionState> _stateSubject =
         new(ConnectionState.Idle);
 
     public IObservable<ConnectionState> State => _stateSubject.AsObservable();

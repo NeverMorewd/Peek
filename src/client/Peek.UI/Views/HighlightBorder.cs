@@ -8,9 +8,10 @@ using Avalonia.Styling;
 using Pipboy.Avalonia;
 using ReactiveUI;
 using System;
-using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using ReactiveUI.Primitives;
+using ReactiveUI.Primitives.Signals;
 
 namespace Peek.UI.Views;
 
@@ -269,11 +270,11 @@ public class HighlightBorder : Window, IDisposable
             _movingBeam.IsVisible = true;
 
             _beamAnimationDisposable =
-                Observable
+                Signal
                     .Interval(TimeSpan.FromMilliseconds(12))
                     //.TakeUntil(cancellationToken)
                     .ObserveOn(RxSchedulers.MainThreadScheduler)
-                    .Subscribe(_ =>
+                    .Subscribe(time =>
                     {
                         _beamProgress += BeamSpeed;
                         if (_beamProgress >= 1)

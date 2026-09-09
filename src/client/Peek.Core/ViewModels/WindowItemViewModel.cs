@@ -1,11 +1,12 @@
 ﻿// ViewModels/WindowItemViewModel.cs
 // Per-row ViewModel for the TreeDataGrid.
 
-using System.Collections.ObjectModel;
-using System.Reactive.Linq;
-using ReactiveUI;
-using ReactiveUI.SourceGenerators;
 using Peek.Core.Models;
+using ReactiveUI;
+using ReactiveUI.Primitives.Signals;
+using ReactiveUI.SourceGenerators;
+using System.Collections.ObjectModel;
+using ReactiveUI.Primitives;
 
 namespace Peek.Core.ViewModels;
 
@@ -107,7 +108,7 @@ public partial  class WindowItemViewModel : ReactiveObject
     {
         _highlightTimer?.Dispose();
         IsHighlighted   = true;
-        _highlightTimer = Observable
+        _highlightTimer = Signal
             .Timer(TimeSpan.FromMilliseconds(800))
             .Subscribe(_ => IsHighlighted = false);
     }

@@ -1,12 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
 using Peek.Ipc.Protocol;
 using Peek.Ipc.Transport;
+using ReactiveUI.Primitives.Signals;
 using System.Collections.Concurrent;
 using System.Globalization;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using ReactiveUI.Primitives;
 
 namespace Peek.Ipc.Channel;
 
@@ -21,7 +21,7 @@ public sealed class JsonRpcChannel : IJsonRpcChannel
     private int _nextId = 0;
 
     private readonly ConcurrentDictionary<int, PendingCall> _pending = new();
-    private readonly Subject<JsonRpcResponse> _responseSubject = new();
+    private readonly Signal<JsonRpcResponse> _responseSubject = new();
     private readonly IDisposable _lineSubscription;
 
     public JsonRpcChannel(

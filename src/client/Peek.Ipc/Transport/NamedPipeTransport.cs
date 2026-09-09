@@ -1,8 +1,8 @@
-using System.IO.Pipes;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
-using System.Text;
 using Microsoft.Extensions.Logging;
+using ReactiveUI.Primitives.Signals;
+using System.IO.Pipes;
+using System.Text;
+using ReactiveUI.Primitives;
 
 namespace Peek.Ipc.Transport;
 
@@ -12,9 +12,9 @@ public sealed class NamedPipeTransport : IPipeTransport
     private readonly string _pipeName;
     private readonly TimeSpan _connectTimeout;
     private readonly ILogger<NamedPipeTransport> _logger;
-    private readonly Subject<string> _lineSubject = new();
+    private readonly Signal<string> _lineSubject = new();
 
-    private readonly BehaviorSubject<TransportState> _stateSubject =
+    private readonly BehaviorSignal<TransportState> _stateSubject =
         new(TransportState.Disconnected);
 
     private NamedPipeClientStream? _pipe;

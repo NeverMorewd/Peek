@@ -1,9 +1,8 @@
 ﻿using Peek.Core.Abstractions;
 using Peek.Ipc.Connection;
+using ReactiveUI.Primitives;
+using ReactiveUI.Primitives.Signals;
 using System.Drawing;
-using System.Reactive;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
 using System.Runtime.Versioning;
 using Windows.Win32;
 using Windows.Win32.UI.WindowsAndMessaging;
@@ -15,14 +14,14 @@ public sealed class WindowsMouseTracker : IMouseTracker, IDisposable
 {
     private const uint WM_LBUTTONUP = 0x0202;
 
-    private readonly BehaviorSubject<bool> _enabled = new(true);
-    private readonly Subject<Unit> _selectedTextSubject = new();
+    private readonly BehaviorSignal<bool> _enabled = new(true);
+    private readonly Signal<RxVoid> _selectedTextSubject = new();
     private readonly WorkerConnection _workerConnection;
     private readonly WindowsHookService _hookService;
     private int _disposed;
 
     public IObservable<Point> MousePositionStream { get; }
-    public IObservable<Unit> SelectedStream { get; }
+    public IObservable<RxVoid> SelectedStream { get; }
 
     public WindowsMouseTracker(
         WorkerConnection workerConnection,
@@ -36,7 +35,7 @@ public sealed class WindowsMouseTracker : IMouseTracker, IDisposable
         _hookService.HookFired += OnHookFired;
 
         MousePositionStream =
-            Observable.Interval(TimeSpan.FromMilliseconds(intervalMs))
+            Signal.Interval(TimeSpan.FromMilliseconds(intervalMs))
                 .Select(_ =>
                 {
                     PInvoke.GetCursorPos(out var p);
@@ -67,7 +66,7 @@ public sealed class WindowsMouseTracker : IMouseTracker, IDisposable
             return;
 
         if (e.WParam == WM_LBUTTONUP && _enabled.Value)
-            _selectedTextSubject.OnNext(Unit.Default);
+            _selectedTextSubject.OnNext(RxVoid.Default);
     }
 
     private static bool IsOwnWindow(int x, int y)

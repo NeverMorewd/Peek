@@ -7,11 +7,9 @@ using Peek.Core.Services;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
 using System.Collections.ObjectModel;
-using System.Reactive;
-using System.Reactive.Disposables;
-using System.Reactive.Disposables.Fluent;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
+using ReactiveUI.Primitives;
+using ReactiveUI.Primitives.Disposables;
+using ReactiveUI.Primitives.Signals;
 
 namespace Peek.Core.ViewModels;
 
@@ -19,9 +17,9 @@ public partial class WindowTrackViewModel : ViewModelBase, IDisposable
 {
     private readonly WindowTracker _tracker;
     private readonly ILogger<WindowTrackViewModel> _logger;
-    private readonly CompositeDisposable _disposables = [];
+    private readonly MultipleDisposable _disposables = [];
     private readonly Dictionary<nint, WindowItemViewModel> _index = [];
-    private readonly BehaviorSubject<bool> _liveMonitoringSubject = new(true);
+    private readonly BehaviorSignal<bool> _liveMonitoringSubject = new(true);
     public ObservableCollection<WindowItemViewModel> Roots { get; } = [];
 
     [Reactive] 
@@ -47,11 +45,11 @@ public partial class WindowTrackViewModel : ViewModelBase, IDisposable
     public int _totalCount;
     [Reactive]
     public int _filteredCount;
-    public ReactiveCommand<Unit, Unit> RefreshCommand 
+    public ReactiveCommand<RxVoid, RxVoid> RefreshCommand 
     { 
         get; 
     }
-    public ReactiveCommand<Unit, Unit> ClearSearchCommand 
+    public ReactiveCommand<RxVoid, RxVoid> ClearSearchCommand 
     { 
         get; 
     }

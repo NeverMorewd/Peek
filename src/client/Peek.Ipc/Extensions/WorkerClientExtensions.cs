@@ -1,7 +1,8 @@
-using System.Reactive.Concurrency;
-using System.Reactive.Linq;
 using Peek.Ipc.Connection;
 using Peek.Ipc.Protocol;
+using ReactiveUI.Primitives;
+using ReactiveUI.Primitives.Concurrency;
+using ReactiveUI.Primitives.Signals;
 
 namespace Peek.Ipc.Extensions;
 
@@ -11,16 +12,16 @@ public static class WorkerClientExtensions
         this WorkerConnection connection,
         IObservable<(int X, int Y)> mousePositions,
         TimeSpan? throttle    = null,
-        IScheduler? scheduler = null)
+        ISequencer? scheduler = null)
     {
         var interval = throttle  ?? TimeSpan.FromMilliseconds(40);
-        var sched    = scheduler ?? TaskPoolScheduler.Default;
+        var sched    = scheduler ?? TaskPoolSequencer.Default;
 
         IObservable<ElementInfo?> QueryObservable() =>
             mousePositions
                 .DistinctUntilChanged()
                 .Throttle(interval, sched)
-                .SelectMany(pos => Observable.FromAsync(ct =>
+                .SelectMany(pos => Signal.FromAsync(ct =>
                     connection.Client.GetElementFromPointAsync(pos.X, pos.Y, ct)
                         .ContinueWith(
                             t => t.IsCompletedSuccessfully ? t.Result : null,
@@ -32,20 +33,20 @@ public static class WorkerClientExtensions
             .Select(isReady =>
                 isReady
                     ? QueryObservable()
-                    : Observable.Return<ElementInfo?>(null))
+                    : Signal.Return<ElementInfo?>(null))
             .Switch();
     }
     public static IObservable<WorkerStatus?> PollStatus(
         this WorkerConnection connection,
         TimeSpan interval,
-        IScheduler? scheduler = null)
+        ISequencer? scheduler = null)
     {
-        var sched = scheduler ?? TaskPoolScheduler.Default;
+        var sched = scheduler ?? TaskPoolSequencer.Default;
 
-        return Observable
+        return Signal
             .Interval(interval, sched)
             .Where(_ => connection.CurrentState == ConnectionState.Ready)
-            .SelectMany(_ => Observable.FromAsync(async ct =>
+            .SelectMany(_ => Signal.FromAsync(async ct =>
             {
                 try
                 {
